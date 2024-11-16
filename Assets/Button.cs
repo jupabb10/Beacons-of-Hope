@@ -33,32 +33,32 @@ public class Button : MonoBehaviour
         
     }
 
-    public void OnCollisionEnter2D(Collider2D collision)
-    {
-        print("Colisione");
-        // Verifica si la colisi�n es con el jugador
-        //if (collision.GetComponent<Collider>().CompareTag("Player"))
-        //{
-        //    // Cambia la imagen a la de colisi�n
-        //    if (spriteRenderer != null && collisionSprite != null)
-        //    {
-        //        spriteRenderer.sprite = collisionSprite;
-        //    }
+    //public void OnCollisionEnter2D(Collider2D collision)
+    //{
+    //    print("Colisione");
+    //    // Verifica si la colisi�n es con el jugador
+    //    //if (collision.GetComponent<Collider>().CompareTag("Player"))
+    //    //{
+    //    //    // Cambia la imagen a la de colisi�n
+    //    //    if (spriteRenderer != null && collisionSprite != null)
+    //    //    {
+    //    //        spriteRenderer.sprite = collisionSprite;
+    //    //    }
 
             
-        //}
-    }
+    //    //}
+    //}
 
-    void OnCollisionExit2D(Collider2D collision)
-    {
-        print("Colisione");
-        //if (collision.GetComponent<Collider>().CompareTag("Player"))
-        //{
-        //    // Restablece la imagen predeterminada
-        //    if (spriteRenderer != null && defaultSprite != null)
-        //    {
-        //        spriteRenderer.sprite = defaultSprite;
-        //    }
-        //}
-    }
+    //void OnCollisionExit2D(Collider2D collision)
+    //{
+    //    print("Colisione");
+    //    //if (collision.GetComponent<Collider>().CompareTag("Player"))
+    //    //{
+    //    //    // Restablece la imagen predeterminada
+    //    //    if (spriteRenderer != null && defaultSprite != null)
+    //    //    {
+    //    //        spriteRenderer.sprite = defaultSprite;
+    //    //    }
+    //    //}
+    //}
 }
