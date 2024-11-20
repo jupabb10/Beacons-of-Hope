@@ -2,33 +2,57 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class MathProblemGenerator : MonoBehaviour
 {
+    public Player player;
     public TextMeshProUGUI problemText; // Campo para mostrar el problema
+    public LivesManager livesManager;
 
-    public TextMeshProUGUI correctText; // Campo para mostrar el problema
-    public TextMeshProUGUI falseText1; // Campo para mostrar el problema
-    public TextMeshProUGUI falseText2; // Campo para mostrar el problema
+    public TextMeshProUGUI Answer1Text; // Campo para mostrar el problema
+    public TextMeshProUGUI Answer2Text; // Campo para mostrar el problema
+    public TextMeshProUGUI Answer3Text; // Campo para mostrar el problema
 
-    private int correctAnswer; // Respuesta correcta para verificar más adelante
-    private int falseAnswer1 = 1; // Respuesta incorrecta
-    private int falseAnswer2 = 2; // Respuesta incorrecta
+    public TextMeshProUGUI ScoreText; // Campo para mostrar el problema
+    private int score = 0;
+    public int lives = 3;
+
+    private int correctAnswerIndex;
+    private int correctAnswer;
+    private int Answer1 = 1;
+    private int Answer2 = 2;
+    private int Answer3 = 0;
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating("GenerateNewProblem", 0f, 5f);
+        livesManager.InitializeLives(lives);
+        if (player == null)
+        {
+            player = FindObjectOfType<Player>();
+        }
+
+        // Configura las invocaciones repetitivas
+        InvokeRepeating("GenerateNewProblem", 0f, 3f);
+        InvokeRepeating("ValidatePlayerPosition", 3f, 3f);
+    }
+
+    public void LoseLife()
+    {
+        lives -= 1;
+        livesManager.UpdateLives(lives);
+
+        if (lives <= 0)
+        {
+            Debug.Log("Game Over");
+            // Aquí puedes manejar el final del juego
+        }
     }
 
     public void GenerateNewProblem()
     {
-        // Genera dos números aleatorios entre 1 y 10
         int num1 = Random.Range(1, 11);
         int num2 = Random.Range(1, 11);
-
-        falseAnswer1 = Random.Range(1, 100);
-        falseAnswer2 = Random.Range(1, 100);
-        // Genera un operador aleatorio (0 = suma, 1 = resta, 2 = multiplicación, 3 = división)
         int operation = Random.Range(0, 4);
         string operatorSymbol = "";
 
@@ -58,16 +82,65 @@ public class MathProblemGenerator : MonoBehaviour
                 break;
         }
 
-        Debug.Log(correctAnswer);
-        correctText.text = correctAnswer.ToString();
-        falseText1.text = falseAnswer1.ToString();
-        falseText2.text = falseAnswer2.ToString();
-        // Muestra el problema en el texto
         problemText.text = $"{num1} {operatorSymbol} {num2} = ?";
+
+        Answer1 = Random.Range(1, 100);
+        Answer2 = Random.Range(1, 100);
+
+        while (Answer1 == correctAnswer)
+        {
+            Answer1 = Random.Range(1, 100);
+        }
+
+        while (Answer2 == correctAnswer || Answer2 == Answer1)
+        {
+            Answer2 = Random.Range(1, 100);
+        }
+
+        // Decide aleatoriamente dónde colocar la respuesta correcta
+        correctAnswerIndex = Random.Range(0, 3);
+
+        if (correctAnswerIndex == 0)
+        {
+            Answer1Text.text = correctAnswer.ToString();
+            Answer2Text.text = Answer1.ToString();
+            Answer3Text.text = Answer2.ToString();
+        }
+        else if (correctAnswerIndex == 1)
+        {
+            Answer1Text.text = Answer1.ToString();
+            Answer2Text.text = correctAnswer.ToString();
+            Answer3Text.text = Answer2.ToString();
+        }
+        else
+        {
+            Answer1Text.text = Answer1.ToString();
+            Answer2Text.text = Answer2.ToString();
+            Answer3Text.text = correctAnswer.ToString();
+        }
+        
+
+    }
+    public int GetCorrectAnswerIndex()
+    {
+        return correctAnswerIndex;
     }
 
-    public int GetCorrectAnswer()
+    void ValidatePlayerPosition()
     {
-        return correctAnswer;
+        // Busca el objeto del jugador y llama a su función de validación
+        player.ValidatePosition();
+    }
+
+    public void AddScore(int points)
+    {
+        score += points;
+        UpdateScoreText();
+    }
+
+    private void UpdateScoreText()
+    {
+        // Formatear el texto con "Score" y un número de 7 dígitos
+        ScoreText.text = $"Score {score:D7}";
     }
 }
