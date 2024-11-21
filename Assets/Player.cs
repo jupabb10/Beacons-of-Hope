@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     private int currentPositionIndex = 1;
     public float moveSpeed = 5f;
 
+    private bool canMove = true;
+
     public MathProblemGenerator mathProblemGenerator;
 
     // Start is called before the first frame update
@@ -56,6 +58,7 @@ public class Player : MonoBehaviour
             if (currentPositionIndex == correctIndex)
             {
                 mathProblemGenerator.AddScore(500);
+                SoundManager.Instance.PlayEffectSound(SoundManager.Instance.correctSound);
             }
             else
             {
@@ -66,9 +69,15 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "boton")
+        if(collision.gameObject.tag == "boton" && canMove)
         {
             rigidbody2.AddForce(new Vector2(0, fuerzaSalto));
         }
+    }
+
+    public void StopPlayer()
+    {
+        canMove = false; // Detiene cualquier acción del jugador
+        rigidbody2.velocity = Vector2.zero; // Detiene cualquier movimiento actual
     }
 }

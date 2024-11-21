@@ -22,10 +22,11 @@ public class MathProblemGenerator : MonoBehaviour
     private int correctAnswer;
     private int Answer1 = 1;
     private int Answer2 = 2;
-    private int Answer3 = 0;
+
     // Start is called before the first frame update
     void Start()
     {
+        SoundManager.Instance.PlayBackgroundSound(SoundManager.Instance.mainMenuSound, true);
         livesManager.InitializeLives(lives);
         if (player == null)
         {
@@ -44,9 +45,20 @@ public class MathProblemGenerator : MonoBehaviour
 
         if (lives <= 0)
         {
-            Debug.Log("Game Over");
-            // Aquí puedes manejar el final del juego
+            livesManager.GameOver();
+            CancelInvoke(); // Detiene todas las invocaciones repetitivas en este script
+            HideTexts();
+            player.StopPlayer();
         }
+    }
+
+    private void HideTexts()
+    {
+        // Desactiva los textos relacionados con los problemas
+        problemText.gameObject.SetActive(false);
+        Answer1Text.gameObject.SetActive(false);
+        Answer2Text.gameObject.SetActive(false);
+        Answer3Text.gameObject.SetActive(false);
     }
 
     public void GenerateNewProblem()
