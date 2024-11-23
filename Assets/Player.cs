@@ -55,10 +55,24 @@ public class Player : MonoBehaviour
         if (mathProblemGenerator != null)
         {
             int correctIndex = mathProblemGenerator.GetCorrectAnswerIndex();
+            GameObject correctButton = GameObject.FindWithTag($"boton{correctIndex}");
             if (currentPositionIndex == correctIndex)
             {
                 mathProblemGenerator.AddScore(500);
                 SoundManager.Instance.PlayEffectSound(SoundManager.Instance.correctSound);
+
+                if (correctButton != null)
+            {
+                ButtonScript buttonScript = correctButton.GetComponent<ButtonScript>();
+                if (buttonScript != null && buttonScript.winSprite != null)
+                {
+                    SpriteRenderer buttonSpriteRenderer = correctButton.GetComponent<SpriteRenderer>();
+                    if (buttonSpriteRenderer != null)
+                    {
+                        buttonSpriteRenderer.sprite = buttonScript.winSprite;
+                    }
+                }
+            }
             }
             else
             {
@@ -69,9 +83,46 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "boton" && canMove)
+        SpriteRenderer buttonSpriteRenderer = collision.gameObject.GetComponent<SpriteRenderer>();
+        ButtonScript buttonScript = collision.gameObject.GetComponent<ButtonScript>();
+        string collisionTag = collision.gameObject.tag;
+
+        if (collisionTag.StartsWith("boton")  && canMove)
         {
             rigidbody2.AddForce(new Vector2(0, fuerzaSalto));
+            if (buttonSpriteRenderer != null)
+            {
+                if (buttonScript != null && buttonScript.newSprite != null)
+                {
+                    buttonSpriteRenderer.sprite = buttonScript.newSprite;
+                }
+            }
+        }
+    }
+
+    //private IEnumerator RestoreSpriteAfterDelay(SpriteRenderer spriteRenderer, Sprite mainSprite, float delay)
+    //{
+    //    yield return new WaitForSeconds(delay);
+    //    if (spriteRenderer != null)
+    //    {
+    //        spriteRenderer.sprite = mainSprite;
+    //    }
+    //}
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        string collisionTag = collision.gameObject.tag;
+
+        if (collisionTag.StartsWith("boton"))
+        {
+            // Restaura el sprite original del botón
+            SpriteRenderer buttonSpriteRenderer = collision.gameObject.GetComponent<SpriteRenderer>();
+            ButtonScript buttonScript = collision.gameObject.GetComponent<ButtonScript>();
+
+            if (buttonSpriteRenderer != null && buttonScript != null && buttonScript.mainSprite != null)
+            {
+                buttonSpriteRenderer.sprite = buttonScript.mainSprite;
+            }
         }
     }
 
