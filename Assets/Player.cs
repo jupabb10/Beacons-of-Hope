@@ -56,6 +56,7 @@ public class Player : MonoBehaviour
         {
             int correctIndex = mathProblemGenerator.GetCorrectAnswerIndex();
             GameObject correctButton = GameObject.FindWithTag($"boton{correctIndex}");
+
             if (currentPositionIndex == correctIndex)
             {
                 mathProblemGenerator.AddScore(500);
