@@ -49,6 +49,11 @@ public class LivesManager : MonoBehaviour
         SoundManager.Instance.PlayEffectSound(SoundManager.Instance.gameOverSound);
     }
 
+    public void ChangeSceneMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void ResetScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);

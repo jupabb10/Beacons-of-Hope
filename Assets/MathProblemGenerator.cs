@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
@@ -10,16 +11,22 @@ public class MathProblemGenerator : MonoBehaviour
     public TextMeshProUGUI problemText; // Campo para mostrar el problema
     public LivesManager livesManager;
 
+    public TextMeshProUGUI levelText;
+
     public TextMeshProUGUI Answer1Text; // Campo para mostrar el problema
     public TextMeshProUGUI Answer2Text; // Campo para mostrar el problema
     public TextMeshProUGUI Answer3Text; // Campo para mostrar el problema
 
     public TextMeshProUGUI ScoreText; // Campo para mostrar el problema
-    private int score = 0;
+    public int score = 0;
     public int lives = 3;
 
     private int correctAnswerIndex;
     private int correctAnswer;
+    public int correctAnswersCount = 0;
+    public int level = 1; // Nivel inicial
+    private int maxLevel = 4;
+
     private int Answer1 = 1;
     private int Answer2 = 2;
 
@@ -46,6 +53,8 @@ public class MathProblemGenerator : MonoBehaviour
         if (lives <= 0)
         {
             livesManager.GameOver();
+            SaveManager.SavePlayerData(this);
+            Debug.Log("Datos guardados");
             CancelInvoke(); // Detiene todas las invocaciones repetitivas en este script
             HideTexts();
             player.StopPlayer();
@@ -63,79 +72,136 @@ public class MathProblemGenerator : MonoBehaviour
 
     public void GenerateNewProblem()
     {
-        int num1 = Random.Range(1, 11);
-        int num2 = Random.Range(1, 11);
-        int operation = Random.Range(0, 4);
-        string operatorSymbol = "";
+        switch (level)
+        {
+            case 1:
+                GenerateBasicProblem();
+                break;
+            case 2:
+                GenerateDecimalProblem();
+                break;
+            case 3:
+                GenerateFractionProblem();
+                break;
+            default:
+                GenerateMixedProblem();
+                break;
+        }
+    }
+    void GenerateBasicProblem()
+    {
+        int num1 = UnityEngine.Random.Range(1, 11);
+        int num2 = UnityEngine.Random.Range(1, 11);
+        char[] operations = { '+', '-', '*', '/' };
+        char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
-        // Calcula la respuesta correcta y construye el problema
+        correctAnswer = SolveProblem(num1, num2, operation);
+        DisplayProblem($"{num1} {operation} {num2}");
+    }
+
+    void GenerateDecimalProblem()
+    {
+        float num1 = (float)Math.Round(UnityEngine.Random.Range(1f, 10f), 1);
+        float num2 = (float)Math.Round(UnityEngine.Random.Range(1f, 10f), 1);
+        char[] operations = { '+', '-', '*' };
+        char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
+
+        correctAnswer = (int)SolveProblem(num1, num2, operation);
+        DisplayProblem($"{num1} {operation} {num2}");
+    }
+
+    void GenerateFractionProblem()
+    {
+        int numerator1 = UnityEngine.Random.Range(1, 11);
+        int denominator1 = UnityEngine.Random.Range(1, 11);
+        int numerator2 = UnityEngine.Random.Range(1, 11);
+        int denominator2 = UnityEngine.Random.Range(1, 11);
+
+        string fraction1 = $"{numerator1}/{denominator1}";
+        string fraction2 = $"{numerator2}/{denominator2}";
+        char[] operations = { '+', '-', '*' };
+        char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
+
+        correctAnswer = SolveFractionProblem(numerator1, denominator1, numerator2, denominator2, operation);
+        DisplayProblem($"{fraction1} {operation} {fraction2}");
+    }
+
+    void GenerateMixedProblem()
+    {
+        int type = UnityEngine.Random.Range(1, 4);
+        if (type == 1)
+            GenerateBasicProblem();
+        else if (type == 2)
+            GenerateDecimalProblem();
+        else
+            GenerateFractionProblem();
+    }
+
+    int SolveProblem(float num1, float num2, char operation)
+    {
         switch (operation)
         {
-            case 0: // Suma
-                correctAnswer = num1 + num2;
-                operatorSymbol = "+";
-                break;
-            case 1: // Resta
-                correctAnswer = num1 - num2;
-                operatorSymbol = "-";
-                break;
-            case 2: // Multiplicación
-                correctAnswer = num1 * num2;
-                operatorSymbol = "×";
-                break;
-            case 3: // División
-                // Asegúrate de que el segundo número sea un divisor del primero para obtener un entero
-                while (num1 % num2 != 0)
-                {
-                    num2 = Random.Range(1, 11);
-                }
-                correctAnswer = num1 / num2;
-                operatorSymbol = "÷";
-                break;
+            case '+': return (int)(num1 + num2);
+            case '-': return (int)(num1 - num2);
+            case '*': return (int)(num1 * num2);
+            case '/': return (int)(num1 / num2);
+            default: return 0;
         }
-
-        problemText.text = $"{num1} {operatorSymbol} {num2} = ?";
-
-        Answer1 = Random.Range(1, 100);
-        Answer2 = Random.Range(1, 100);
-
-        while (Answer1 == correctAnswer)
-        {
-            Answer1 = Random.Range(1, 100);
-        }
-
-        while (Answer2 == correctAnswer || Answer2 == Answer1)
-        {
-            Answer2 = Random.Range(1, 100);
-        }
-
-        // Decide aleatoriamente dónde colocar la respuesta correcta
-        correctAnswerIndex = Random.Range(0, 3);
-
-        if (correctAnswerIndex == 0)
-        {
-            Answer1Text.text = correctAnswer.ToString();
-            Answer2Text.text = Answer1.ToString();
-            Answer3Text.text = Answer2.ToString();
-        }
-        else if (correctAnswerIndex == 1)
-        {
-            Answer1Text.text = Answer1.ToString();
-            Answer2Text.text = correctAnswer.ToString();
-            Answer3Text.text = Answer2.ToString();
-        }
-        else
-        {
-            Answer1Text.text = Answer1.ToString();
-            Answer2Text.text = Answer2.ToString();
-            Answer3Text.text = correctAnswer.ToString();
-        }
-        
-
     }
+
+    int SolveFractionProblem(int num1, int den1, int num2, int den2, char operation)
+    {
+        int result = 0;
+        switch (operation)
+        {
+            case '+':
+                result = num1 * den2 + num2 * den1;
+                break;
+            case '-':
+                result = num1 * den2 - num2 * den1;
+                break;
+            case '*':
+                result = num1 * num2;
+                break;
+        }
+        return result;
+    }
+
+    void DisplayProblem(string problem)
+    {
+        problemText.text = problem;
+        AssignAnswers(correctAnswer);
+    }
+
+    void AssignAnswers(int correctAnswer)
+    {
+        int[] answers = new int[3];
+        correctAnswerIndex = UnityEngine.Random.Range(0, 3); // Actualiza el índice correcto
+        answers[correctAnswerIndex] = correctAnswer;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (i != correctAnswerIndex)
+            {
+                answers[i] = UnityEngine.Random.Range(1, 101); // Genera respuestas incorrectas
+            }
+        }
+
+        Answer1Text.text = answers[0].ToString();
+        Answer2Text.text = answers[1].ToString();
+        Answer3Text.text = answers[2].ToString();
+    }
+
     public int GetCorrectAnswerIndex()
     {
         return correctAnswerIndex;
+    }
+
+    public void LevelUp()
+    {
+        level++;
+        correctAnswersCount = 0;
+        levelText.text = $"Nivel {level}";
     }
 
     void ValidatePlayerPosition()

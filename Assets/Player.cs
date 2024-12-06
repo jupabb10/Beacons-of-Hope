@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -16,12 +16,49 @@ public class Player : MonoBehaviour
 
     private bool canMove = true;
 
+    public GameObject feedbackPanel; // Referencia al panel de feedback
+    public Color correctColor = Color.green; // Color para respuestas correctas
+    public Color incorrectColor = Color.red; // Color para respuestas incorrectas
+    public Color defaultColor = new Color(1, 1, 1, 0); // Transparente por defecto
+    private Image panelImage;
+
     public MathProblemGenerator mathProblemGenerator;
 
     // Start is called before the first frame update
     void Start()
     {
         rigidbody2 = GetComponent<Rigidbody2D>();
+
+        if (feedbackPanel != null)
+        {
+            // Obtener el componente Image del panel
+            panelImage = feedbackPanel.GetComponent<Image>();
+            if (panelImage != null)
+            {
+                // Asegurarse de que el color inicial sea el por defecto
+                panelImage.color = defaultColor;
+                feedbackPanel.SetActive(false);
+            }
+        }
+    }
+
+    public void ShowFeedback(bool isCorrect)
+    {
+        if (panelImage == null) return;
+        feedbackPanel.SetActive(true);
+        panelImage.color = isCorrect ? correctColor : incorrectColor;
+
+        Invoke(nameof(ResetPanelColor), 1f);
+    }
+
+    private void ResetPanelColor()
+    {
+        if (panelImage != null)
+        {
+            // Volver al color por defecto (transparente)
+            panelImage.color = defaultColor;
+            feedbackPanel.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -59,8 +96,16 @@ public class Player : MonoBehaviour
 
             if (currentPositionIndex == correctIndex)
             {
+
+                mathProblemGenerator.correctAnswersCount++;
                 mathProblemGenerator.AddScore(500);
+                if (mathProblemGenerator.correctAnswersCount >= 4)
+                {
+                    mathProblemGenerator.LevelUp();
+                }
+
                 SoundManager.Instance.PlayEffectSound(SoundManager.Instance.correctSound);
+                ShowFeedback(true);
 
                 if (correctButton != null)
             {
@@ -77,7 +122,9 @@ public class Player : MonoBehaviour
             }
             else
             {
+                mathProblemGenerator.correctAnswersCount = 0;
                 mathProblemGenerator.LoseLife();
+                ShowFeedback(false);
             }
         }
     }
