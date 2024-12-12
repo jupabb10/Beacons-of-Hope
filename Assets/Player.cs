@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
 
             if (currentPositionIndex == correctIndex)
             {
-
+                mathProblemGenerator.timer = mathProblemGenerator.setTimer;
                 mathProblemGenerator.correctAnswersCount++;
                 mathProblemGenerator.AddScore(500);
                 if (mathProblemGenerator.correctAnswersCount >= 4)

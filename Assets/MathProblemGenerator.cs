@@ -18,8 +18,12 @@ public class MathProblemGenerator : MonoBehaviour
     public TextMeshProUGUI Answer3Text; // Campo para mostrar el problema
 
     public TextMeshProUGUI ScoreText; // Campo para mostrar el problema
+
+    public TextMeshProUGUI timerText; // Campo para mostrar el problema
     public int score = 0;
     public int lives = 3;
+    public int timer = 25;
+    public int setTimer = 25;
 
     private int correctAnswerIndex;
     private int correctAnswer;
@@ -43,6 +47,13 @@ public class MathProblemGenerator : MonoBehaviour
         // Configura las invocaciones repetitivas
         InvokeRepeating("GenerateNewProblem", 0f, 3f);
         InvokeRepeating("ValidatePlayerPosition", 3f, 3f);
+        InvokeRepeating("changeTimer", 1f, 1f);
+    }
+
+    void changeTimer()
+    {
+        timer = timer - 1;
+        timerText.text = timer.ToString();
     }
 
     public void LoseLife()
@@ -76,15 +87,19 @@ public class MathProblemGenerator : MonoBehaviour
         {
             case 1:
                 GenerateBasicProblem();
+                setTimer = 25 ;
                 break;
             case 2:
                 GenerateDecimalProblem();
+                setTimer = 20;
                 break;
             case 3:
                 GenerateFractionProblem();
+                setTimer = 15;
                 break;
             default:
                 GenerateMixedProblem();
+                setTimer = 10;
                 break;
         }
     }
