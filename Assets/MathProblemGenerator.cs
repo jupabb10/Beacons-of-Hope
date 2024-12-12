@@ -45,15 +45,33 @@ public class MathProblemGenerator : MonoBehaviour
         }
 
         // Configura las invocaciones repetitivas
-        InvokeRepeating("GenerateNewProblem", 0f, 3f);
-        InvokeRepeating("ValidatePlayerPosition", 3f, 3f);
+        //InvokeRepeating("GenerateNewProblem", 0f, 3f);
+        //InvokeRepeating("ValidatePlayerPosition", 3f, 3f);
+        GenerateNewProblem();
         InvokeRepeating("changeTimer", 1f, 1f);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            GenerateNewProblem();
+            ValidatePlayerPosition();
+            timer = setTimer;
+        }
     }
 
     void changeTimer()
     {
         timer = timer - 1;
         timerText.text = timer.ToString();
+
+        if(timer == 0)
+        {
+            GenerateNewProblem();
+            ValidatePlayerPosition();
+            timer = setTimer;
+        }
     }
 
     public void LoseLife()
