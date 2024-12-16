@@ -94,6 +94,14 @@ public class Player : MonoBehaviour
             int correctIndex = mathProblemGenerator.GetCorrectAnswerIndex();
             GameObject correctButton = GameObject.FindWithTag($"boton{correctIndex}");
 
+            if (correctButton == null)
+            {
+                Debug.LogWarning($"No se encontró un botón con el tag: boton{correctIndex}");
+                return;
+            }
+
+            Debug.Log($"Posición actual: {currentPositionIndex} posición de la respuesta: {correctIndex}");
+
             if (currentPositionIndex == correctIndex)
             {
                 mathProblemGenerator.timer = mathProblemGenerator.setTimer;

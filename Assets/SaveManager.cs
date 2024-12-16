@@ -1,35 +1,72 @@
 using UnityEngine;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Generic;
 
 public static class SaveManager
 {
-    public static void SavePlayerData(MathProblemGenerator mathProblemGenerator)
+    public static void SavePlayerData(ModelSaveData modelSaveData)
     {
-        GameData gameData = new GameData(mathProblemGenerator);
-        string dataPath = Application.persistentDataPath + "/score.save";
-        FileStream fileStream = new FileStream(dataPath, FileMode.Create);
-        BinaryFormatter binaryFormatter = new BinaryFormatter();
-        binaryFormatter.Serialize(fileStream, gameData);
-        fileStream.Close();
-    }
+        string filePath = Application.persistentDataPath + "/score.json";
 
-    public static GameData loadGameData()
-    {
-        string dataPath = Application.persistentDataPath + "/score.save";
-
-        if(File.Exists(dataPath))
+        // Leer datos existentes
+        SaveDataWrapper wrapper;
+        if (File.Exists(filePath))
         {
-            FileStream fileStream = new FileStream(dataPath, FileMode.Open);
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            GameData gameData = (GameData)binaryFormatter.Deserialize(fileStream);
-            fileStream.Close();
-            return gameData;
+            string json = File.ReadAllText(filePath);
+            wrapper = JsonUtility.FromJson<SaveDataWrapper>(json) ?? new SaveDataWrapper();
         }
         else
         {
-            Debug.Log("No se encontro ningun archivo de guardado");
-            return null;
+            wrapper = new SaveDataWrapper();
         }
+
+        // Asegurarse de que la lista esté inicializada
+        if (wrapper.data == null)
+        {
+            wrapper.data = new List<ModelSaveData>();
+        }
+
+        // Agregar el nuevo dato
+        wrapper.data.Add(modelSaveData);
+
+        // Serializar y guardar
+        string newJson = JsonUtility.ToJson(wrapper, true); // true para formatear el JSON
+        File.WriteAllText(filePath, newJson);
+
+        //Debug.Log("Datos guardados correctamente.");
+    }
+
+    public static List<ModelSaveData> LoadPlayerData()
+    {
+        string filePath = Application.persistentDataPath + "/score.json";
+
+        if (File.Exists(filePath))
+        {
+            Debug.Log($"Archivo encontrado en: {filePath}");
+            string json = File.ReadAllText(filePath);
+            Debug.Log($"Contenido del archivo: {json}");
+
+            SaveDataWrapper wrapper = JsonUtility.FromJson<SaveDataWrapper>(json);
+
+            if (wrapper != null)
+            {
+                //Debug.Log($"Wrapper deserializado correctamente. Número de elementos en 'data': {wrapper.data?.Count ?? 0}");
+
+                if (wrapper.data != null)
+                {
+                    return wrapper.data; // Retorna la lista de datos
+                }
+            }
+            else
+            {
+                //Debug.LogWarning("El wrapper deserializado es nulo.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Archivo no encontrado.");
+        }
+
+        return new List<ModelSaveData>(); // Retorna lista vacía si no hay datos
     }
 }

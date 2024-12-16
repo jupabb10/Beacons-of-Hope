@@ -44,6 +44,13 @@ public class MathProblemGenerator : MonoBehaviour
             player = FindObjectOfType<Player>();
         }
 
+        List<ModelSaveData> allScores = SaveManager.LoadPlayerData();
+
+        foreach (ModelSaveData score in allScores)
+        {
+            Debug.Log($"Player: {score.player}, Score: {score.score}, Time: {score.time}, Correct Answer: {score.correctAnswer}");
+        }
+
         // Configura las invocaciones repetitivas
         //InvokeRepeating("GenerateNewProblem", 0f, 3f);
         //InvokeRepeating("ValidatePlayerPosition", 3f, 3f);
@@ -55,9 +62,9 @@ public class MathProblemGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            GenerateNewProblem();
-            ValidatePlayerPosition();
             timer = setTimer;
+            Invoke(nameof(ValidatePlayerPosition), 0.1f);
+            Invoke(nameof(GenerateNewProblem), 0.1f);
         }
     }
 
@@ -82,8 +89,14 @@ public class MathProblemGenerator : MonoBehaviour
         if (lives <= 0)
         {
             livesManager.GameOver();
-            SaveManager.SavePlayerData(this);
-            Debug.Log("Datos guardados");
+            ModelSaveData gameData = new ModelSaveData{
+                player = "Player",
+                score = $"{score:D7}",
+                time = "01:00",
+                correctAnswer= correctAnswer.ToString()
+            };
+
+            SaveManager.SavePlayerData(gameData);
             CancelInvoke(); // Detiene todas las invocaciones repetitivas en este script
             HideTexts();
             player.StopPlayer();
