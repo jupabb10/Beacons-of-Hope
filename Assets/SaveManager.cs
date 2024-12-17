@@ -8,8 +8,8 @@ public static class SaveManager
     {
         string filePath = Application.persistentDataPath + "/score.json";
 
-        // Leer datos existentes
         SaveDataWrapper wrapper;
+
         if (File.Exists(filePath))
         {
             string json = File.ReadAllText(filePath);
@@ -19,18 +19,12 @@ public static class SaveManager
         {
             wrapper = new SaveDataWrapper();
         }
-
-        // Asegurarse de que la lista esté inicializada
         if (wrapper.data == null)
         {
             wrapper.data = new List<ModelSaveData>();
         }
-
-        // Agregar el nuevo dato
         wrapper.data.Add(modelSaveData);
-
-        // Serializar y guardar
-        string newJson = JsonUtility.ToJson(wrapper, true); // true para formatear el JSON
+        string newJson = JsonUtility.ToJson(wrapper);
         File.WriteAllText(filePath, newJson);
 
         //Debug.Log("Datos guardados correctamente.");
@@ -42,24 +36,16 @@ public static class SaveManager
 
         if (File.Exists(filePath))
         {
-            Debug.Log($"Archivo encontrado en: {filePath}");
             string json = File.ReadAllText(filePath);
-            Debug.Log($"Contenido del archivo: {json}");
 
             SaveDataWrapper wrapper = JsonUtility.FromJson<SaveDataWrapper>(json);
 
             if (wrapper != null)
             {
-                //Debug.Log($"Wrapper deserializado correctamente. Número de elementos en 'data': {wrapper.data?.Count ?? 0}");
-
                 if (wrapper.data != null)
                 {
-                    return wrapper.data; // Retorna la lista de datos
+                    return wrapper.data;
                 }
-            }
-            else
-            {
-                //Debug.LogWarning("El wrapper deserializado es nulo.");
             }
         }
         else
@@ -67,6 +53,6 @@ public static class SaveManager
             Debug.LogWarning("Archivo no encontrado.");
         }
 
-        return new List<ModelSaveData>(); // Retorna lista vacía si no hay datos
+        return new List<ModelSaveData>();
     }
 }

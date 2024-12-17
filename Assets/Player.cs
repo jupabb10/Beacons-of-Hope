@@ -100,16 +100,21 @@ public class Player : MonoBehaviour
                 return;
             }
 
-            Debug.Log($"Posición actual: {currentPositionIndex} posición de la respuesta: {correctIndex}");
-
             if (currentPositionIndex == correctIndex)
             {
                 mathProblemGenerator.timer = mathProblemGenerator.setTimer;
+                mathProblemGenerator.totalAnswerCorrect += 1;
                 mathProblemGenerator.correctAnswersCount++;
                 mathProblemGenerator.AddScore(500);
                 if (mathProblemGenerator.correctAnswersCount >= 4)
                 {
                     mathProblemGenerator.LevelUp();
+                }
+
+                if(mathProblemGenerator.level == 4)
+                {
+                    mathProblemGenerator.lives += 1;
+                    mathProblemGenerator.livesManager.UpdateLives(mathProblemGenerator.lives);
                 }
 
                 SoundManager.Instance.PlayEffectSound(SoundManager.Instance.correctSound);

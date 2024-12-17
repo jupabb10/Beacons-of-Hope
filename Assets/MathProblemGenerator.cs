@@ -27,6 +27,7 @@ public class MathProblemGenerator : MonoBehaviour
 
     private int correctAnswerIndex;
     private int correctAnswer;
+    public int totalAnswerCorrect = 0;
     public int correctAnswersCount = 0;
     public int level = 1; // Nivel inicial
     private int maxLevel = 4;
@@ -93,7 +94,7 @@ public class MathProblemGenerator : MonoBehaviour
                 player = "Player",
                 score = $"{score:D7}",
                 time = "01:00",
-                correctAnswer= correctAnswer.ToString()
+                correctAnswer= totalAnswerCorrect.ToString()
             };
 
             SaveManager.SavePlayerData(gameData);
@@ -229,10 +230,21 @@ public class MathProblemGenerator : MonoBehaviour
         {
             if (i != correctAnswerIndex)
             {
-                answers[i] = UnityEngine.Random.Range(1, 101); // Genera respuestas incorrectas
+                // Genera respuestas incorrectas basadas en el valor correcto
+                int incorrectAnswer;
+                do
+                {
+                    int deviation = UnityEngine.Random.Range(-9, 10); // Rango de desviación entre -3 y 3
+                    incorrectAnswer = correctAnswer + deviation;
+
+                    // Asegúrate de que no se genere el valor correcto o un valor duplicado
+                } while (incorrectAnswer == correctAnswer || System.Array.Exists(answers, x => x == incorrectAnswer));
+
+                answers[i] = incorrectAnswer;
             }
         }
 
+        // Asignar los valores a los textos de los botones
         Answer1Text.text = answers[0].ToString();
         Answer2Text.text = answers[1].ToString();
         Answer3Text.text = answers[2].ToString();
