@@ -1,3 +1,6 @@
--Arreglar respuesta con fraciones y decimales 
--Las respuesta se mas cercanas a la correcta 
+
 -bonificacion por tiempo (entre mas rápido bonifica mas puntos) puede ser un multiplicador 3x 2x 1.25x
+
+- no ta prioritario 
+-burbuja de respuesta (asi como en la interfaz que nos pasaron)
+-lo del efecto guitar hero

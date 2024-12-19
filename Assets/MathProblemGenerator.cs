@@ -26,7 +26,7 @@ public class MathProblemGenerator : MonoBehaviour
     public int setTimer = 25;
 
     private int correctAnswerIndex;
-    private int correctAnswer;
+    private object correctAnswer;
     public int totalAnswerCorrect = 0;
     public int correctAnswersCount = 0;
     public int level = 1; // Nivel inicial
@@ -119,7 +119,7 @@ public class MathProblemGenerator : MonoBehaviour
         {
             case 1:
                 GenerateBasicProblem();
-                setTimer = 25 ;
+                setTimer = 25;
                 break;
             case 2:
                 GenerateDecimalProblem();
@@ -135,6 +135,36 @@ public class MathProblemGenerator : MonoBehaviour
                 break;
         }
     }
+
+    //float ConvertToDecimal(int correctAnswer)
+    //{
+    //    return correctAnswer + UnityEngine.Random.Range(-0.5f, 0.5f); // Agrega un pequeño desplazamiento decimal
+    //}
+
+    //string ConvertToFraction(int correctAnswer)
+    //{
+    //    int numerator = correctAnswer * UnityEngine.Random.Range(2, 5); // Escalar el numerador
+    //    int denominator = UnityEngine.Random.Range(2, 5); // Escalar el denominador
+
+    //    // Reducir fracción si es posible
+    //    int gcd = GCD(numerator, denominator);
+    //    numerator /= gcd;
+    //    denominator /= gcd;
+
+    //    return $"{numerator}/{denominator}";
+    //}
+
+    int GCD(int a, int b)
+    {
+        while (b != 0)
+        {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
     void GenerateBasicProblem()
     {
         int num1 = UnityEngine.Random.Range(1, 11);
@@ -148,13 +178,25 @@ public class MathProblemGenerator : MonoBehaviour
 
     void GenerateDecimalProblem()
     {
-        float num1 = (float)Math.Round(UnityEngine.Random.Range(1f, 10f), 1);
-        float num2 = (float)Math.Round(UnityEngine.Random.Range(1f, 10f), 1);
+        float num1 = UnityEngine.Random.Range(1f, 10f);
+        float num2 = UnityEngine.Random.Range(1f, 10f);
         char[] operations = { '+', '-', '*' };
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
-        correctAnswer = (int)SolveProblem(num1, num2, operation);
-        DisplayProblem($"{num1} {operation} {num2}");
+        switch (operation)
+        {
+            case '+':
+                correctAnswer = MathF.Round(num1 + num2, 2); // Redondear a 2 decimales
+                break;
+            case '-':
+                correctAnswer = MathF.Round(num1 - num2, 2); // Redondear a 2 decimales
+                break;
+            case '*':
+                correctAnswer = MathF.Round(num1 * num2, 2); // Redondear a 2 decimales
+                break;
+        }
+
+        DisplayProblem($"{num1:F2} {operation} {num2:F2}");
     }
 
     void GenerateFractionProblem()
@@ -164,13 +206,43 @@ public class MathProblemGenerator : MonoBehaviour
         int numerator2 = UnityEngine.Random.Range(1, 11);
         int denominator2 = UnityEngine.Random.Range(1, 11);
 
-        string fraction1 = $"{numerator1}/{denominator1}";
-        string fraction2 = $"{numerator2}/{denominator2}";
         char[] operations = { '+', '-', '*' };
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
-        correctAnswer = SolveFractionProblem(numerator1, denominator1, numerator2, denominator2, operation);
+        correctAnswer = ConvertToFractionResult(numerator1, denominator1, numerator2, denominator2, operation);
+        string fraction1 = $"{numerator1}/{denominator1}";
+        string fraction2 = $"{numerator2}/{denominator2}";
+
         DisplayProblem($"{fraction1} {operation} {fraction2}");
+    }
+
+    string ConvertToFractionResult(int numerator1, int denominator1, int numerator2, int denominator2, char operation)
+    {
+        int resultNumerator, resultDenominator;
+
+        switch (operation)
+        {
+            case '+':
+                resultNumerator = (numerator1 * denominator2) + (numerator2 * denominator1);
+                resultDenominator = denominator1 * denominator2;
+                break;
+            case '-':
+                resultNumerator = (numerator1 * denominator2) - (numerator2 * denominator1);
+                resultDenominator = denominator1 * denominator2;
+                break;
+            case '*':
+                resultNumerator = numerator1 * numerator2;
+                resultDenominator = denominator1 * denominator2;
+                break;
+            default:
+                throw new System.Exception("Operación no válida");
+        }
+
+        int gcd = GCD(resultNumerator, resultDenominator);
+        resultNumerator /= gcd;
+        resultDenominator /= gcd;
+
+        return $"{resultNumerator}/{resultDenominator}";
     }
 
     void GenerateMixedProblem()
@@ -217,38 +289,75 @@ public class MathProblemGenerator : MonoBehaviour
     void DisplayProblem(string problem)
     {
         problemText.text = problem;
-        AssignAnswers(correctAnswer);
+        if (level == 1)
+        {
+            AssignAnswers(correctAnswer);
+        }
+        else if (level == 2)
+        {
+            AssignAnswers((float)correctAnswer);
+        }
+        else if (level == 3 || level == 4)
+        {
+            AssignAnswers(correctAnswer.ToString());
+        }
     }
 
-    void AssignAnswers(int correctAnswer)
+    void AssignAnswers(object correctAnswer)
     {
-        int[] answers = new int[3];
-        correctAnswerIndex = UnityEngine.Random.Range(0, 3); // Actualiza el índice correcto
-        answers[correctAnswerIndex] = correctAnswer;
+        string[] answers = new string[3];
+        correctAnswerIndex = UnityEngine.Random.Range(0, 3);
+        answers[correctAnswerIndex] = correctAnswer.ToString();
 
         for (int i = 0; i < 3; i++)
         {
             if (i != correctAnswerIndex)
             {
-                // Genera respuestas incorrectas basadas en el valor correcto
-                int incorrectAnswer;
+                string incorrectAnswer;
                 do
                 {
-                    int deviation = UnityEngine.Random.Range(-9, 10); // Rango de desviación entre -3 y 3
-                    incorrectAnswer = correctAnswer + deviation;
-
-                    // Asegúrate de que no se genere el valor correcto o un valor duplicado
-                } while (incorrectAnswer == correctAnswer || System.Array.Exists(answers, x => x == incorrectAnswer));
+                    if (level == 1)
+                    {
+                        int deviation = UnityEngine.Random.Range(-9, 10);
+                        incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
+                    }
+                    else if (level == 2)
+                    {
+                        float deviation = UnityEngine.Random.Range(-1f, 1f);
+                        float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
+                        incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2"); // Redondear y formatear a 2 decimales
+                    }
+                    else if (level == 3)
+                    {
+                        incorrectAnswer = GenerateRandomFraction();
+                    }
+                    else
+                    {
+                        throw new System.Exception("Tipo de respuesta desconocido");
+                    }
+                } while (incorrectAnswer == correctAnswer.ToString() || System.Array.Exists(answers, x => x == incorrectAnswer));
 
                 answers[i] = incorrectAnswer;
             }
         }
 
-        // Asignar los valores a los textos de los botones
-        Answer1Text.text = answers[0].ToString();
-        Answer2Text.text = answers[1].ToString();
-        Answer3Text.text = answers[2].ToString();
+        Answer1Text.text = answers[0];
+        Answer2Text.text = answers[1];
+        Answer3Text.text = answers[2];
     }
+
+    string GenerateRandomFraction()
+    {
+        int numerator = UnityEngine.Random.Range(1, 11);
+        int denominator;
+        do
+        {
+            denominator = UnityEngine.Random.Range(1, 11);
+        } while (denominator == 0); // Asegurarse de que el denominador no sea 0
+
+        return $"{numerator}/{denominator}";
+    }
+
 
     public int GetCorrectAnswerIndex()
     {
