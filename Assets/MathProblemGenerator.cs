@@ -23,6 +23,7 @@ public class MathProblemGenerator : MonoBehaviour
     public int score = 0;
     public int lives = 3;
     public int timer = 25;
+    public int timer2 = 25;
     public int setTimer = 25;
 
     private int correctAnswerIndex;
@@ -52,9 +53,6 @@ public class MathProblemGenerator : MonoBehaviour
             Debug.Log($"Player: {score.player}, Score: {score.score}, Time: {score.time}, Correct Answer: {score.correctAnswer}");
         }
 
-        // Configura las invocaciones repetitivas
-        //InvokeRepeating("GenerateNewProblem", 0f, 3f);
-        //InvokeRepeating("ValidatePlayerPosition", 3f, 3f);
         GenerateNewProblem();
         InvokeRepeating("changeTimer", 1f, 1f);
     }
@@ -63,15 +61,16 @@ public class MathProblemGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            timer = setTimer;
             Invoke(nameof(ValidatePlayerPosition), 0.1f);
             Invoke(nameof(GenerateNewProblem), 0.1f);
+            timer = setTimer;
         }
     }
 
     void changeTimer()
     {
-        timer = timer - 1;
+        timer = Mathf.Max(0, timer - 1);
+        timer2 = timer;
         timerText.text = timer.ToString();
 
         if(timer == 0)
@@ -98,7 +97,7 @@ public class MathProblemGenerator : MonoBehaviour
             };
 
             SaveManager.SavePlayerData(gameData);
-            CancelInvoke(); // Detiene todas las invocaciones repetitivas en este script
+            CancelInvoke();
             HideTexts();
             player.StopPlayer();
         }
@@ -106,7 +105,6 @@ public class MathProblemGenerator : MonoBehaviour
 
     private void HideTexts()
     {
-        // Desactiva los textos relacionados con los problemas
         problemText.gameObject.SetActive(false);
         Answer1Text.gameObject.SetActive(false);
         Answer2Text.gameObject.SetActive(false);
@@ -135,24 +133,6 @@ public class MathProblemGenerator : MonoBehaviour
                 break;
         }
     }
-
-    //float ConvertToDecimal(int correctAnswer)
-    //{
-    //    return correctAnswer + UnityEngine.Random.Range(-0.5f, 0.5f); // Agrega un pequeño desplazamiento decimal
-    //}
-
-    //string ConvertToFraction(int correctAnswer)
-    //{
-    //    int numerator = correctAnswer * UnityEngine.Random.Range(2, 5); // Escalar el numerador
-    //    int denominator = UnityEngine.Random.Range(2, 5); // Escalar el denominador
-
-    //    // Reducir fracción si es posible
-    //    int gcd = GCD(numerator, denominator);
-    //    numerator /= gcd;
-    //    denominator /= gcd;
-
-    //    return $"{numerator}/{denominator}";
-    //}
 
     int GCD(int a, int b)
     {
@@ -186,13 +166,13 @@ public class MathProblemGenerator : MonoBehaviour
         switch (operation)
         {
             case '+':
-                correctAnswer = MathF.Round(num1 + num2, 2); // Redondear a 2 decimales
+                correctAnswer = MathF.Round(num1 + num2, 2);
                 break;
             case '-':
-                correctAnswer = MathF.Round(num1 - num2, 2); // Redondear a 2 decimales
+                correctAnswer = MathF.Round(num1 - num2, 2);
                 break;
             case '*':
-                correctAnswer = MathF.Round(num1 * num2, 2); // Redondear a 2 decimales
+                correctAnswer = MathF.Round(num1 * num2, 2);
                 break;
         }
 
@@ -379,9 +359,27 @@ public class MathProblemGenerator : MonoBehaviour
 
     public void AddScore(int points)
     {
-        score += points;
+        float timeBonus = CalculateTimeBonus();
+        int totalPoints = Mathf.RoundToInt(points * timeBonus); // Aplica la bonificación
+        score += totalPoints;
+
         UpdateScoreText();
     }
+
+    private float CalculateTimeBonus()
+    {
+        float timePercentage = (float)timer2 / setTimer;
+
+        if (timePercentage > 0.75f)
+            return 3f; // Bonificación 3x
+        else if (timePercentage > 0.5f)
+            return 2f; // Bonificación 2x
+        else if (timePercentage > 0.25f)
+            return 1.25f; // Bonificación 1.25xchangeTimer
+        else
+            return 1f; // Sin bonificación
+    }
+
 
     private void UpdateScoreText()
     {
