@@ -6,7 +6,6 @@
 ---------------------------------------------------
 
 solo para recordarte cuales seria los puntos para refrescar. 
-- los bugs restante de los problemas 
 -los cuadros de las repeusta 
 - efecto de bordeado de los texto
 - por ultimo el efecto guietar hero

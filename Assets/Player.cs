@@ -111,7 +111,7 @@ public class Player : MonoBehaviour
                     mathProblemGenerator.LevelUp();
                 }
 
-                if(mathProblemGenerator.level == 4)
+                if(mathProblemGenerator.level == 4 && mathProblemGenerator.correctAnswersCount > 3)
                 {
                     mathProblemGenerator.lives += 1;
                     mathProblemGenerator.livesManager.UpdateLives(mathProblemGenerator.lives);

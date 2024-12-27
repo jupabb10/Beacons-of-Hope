@@ -31,7 +31,7 @@ public class MathProblemGenerator : MonoBehaviour
     private object correctAnswer;
     public int totalAnswerCorrect = 0;
     public int correctAnswersCount = 0;
-    public int level = 1; // Nivel inicial
+    public int level = 4; // Nivel inicial
     private int maxLevel = 4;
 
     private int Answer1 = 1;
@@ -358,7 +358,7 @@ public class MathProblemGenerator : MonoBehaviour
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                         incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2"); // Redondear y formatear a 2 decimales
                     }
-                    else if (level == 3)
+                    else if (level == 3 || level == 4)
                     {
                         incorrectAnswer = GenerateRandomFraction();
                     }
