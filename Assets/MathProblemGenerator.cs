@@ -4,6 +4,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
+using System.Linq;
 
 public class MathProblemGenerator : MonoBehaviour
 {
@@ -44,13 +45,6 @@ public class MathProblemGenerator : MonoBehaviour
         if (player == null)
         {
             player = FindObjectOfType<Player>();
-        }
-
-        List<ModelSaveData> allScores = SaveManager.LoadPlayerData();
-
-        foreach (ModelSaveData score in allScores)
-        {
-            Debug.Log($"Player: {score.player}, Score: {score.score}, Time: {score.time}, Correct Answer: {score.correctAnswer}");
         }
 
         GenerateNewProblem();
@@ -149,20 +143,49 @@ public class MathProblemGenerator : MonoBehaviour
     {
         int num1 = UnityEngine.Random.Range(1, 11);
         int num2 = UnityEngine.Random.Range(1, 11);
-        char[] operations = { '+', '-', '*', '/' };
+        char[] operations;
+        if (correctAnswersCount < 3)
+        {
+            operations = new char[] { '+', '-' }; // Solo suma y resta
+        }
+        else
+        {
+            operations = new char[] { '*', '/' }; // Multiplicación y división
+        }
+
+        // Selecciona la operación al azar de las permitidas
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
+        // Resuelve el problema y muestra
         correctAnswer = SolveProblem(num1, num2, operation);
         DisplayProblem($"{num1} {operation} {num2}");
     }
 
     void GenerateDecimalProblem()
     {
-        float num1 = UnityEngine.Random.Range(1f, 10f);
-        float num2 = UnityEngine.Random.Range(1f, 10f);
-        char[] operations = { '+', '-', '*' };
-        char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
+        float num1, num2;
+        char[] operations;
 
+        if (correctAnswersCount < 3)
+        {
+            // Solo suma y resta con un decimal
+            operations = new char[] { '+', '-' };
+            num1 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 1); // Un decimal
+            num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 1); // Un decimal
+        }
+        else
+        {
+            // Multiplicación o división con dos decimales
+            operations = new char[] { '*', '/' };
+            num1 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Dos decimales
+            num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Dos decimales
+            if (operations.Contains('/') && num2 == 0)
+            {
+                num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Evita división por cero
+            }
+        }
+
+        char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
         switch (operation)
         {
             case '+':
@@ -174,6 +197,9 @@ public class MathProblemGenerator : MonoBehaviour
             case '*':
                 correctAnswer = MathF.Round(num1 * num2, 2);
                 break;
+            case '/':
+                correctAnswer = MathF.Round(num1 / num2, 2);
+                break;
         }
 
         DisplayProblem($"{num1:F2} {operation} {num2:F2}");
@@ -182,14 +208,39 @@ public class MathProblemGenerator : MonoBehaviour
     void GenerateFractionProblem()
     {
         int numerator1 = UnityEngine.Random.Range(1, 11);
-        int denominator1 = UnityEngine.Random.Range(1, 11);
         int numerator2 = UnityEngine.Random.Range(1, 11);
+        int denominator1 = UnityEngine.Random.Range(1, 11);
         int denominator2 = UnityEngine.Random.Range(1, 11);
+        char[] operations;
 
-        char[] operations = { '+', '-', '*' };
+        if (correctAnswersCount < 3)
+        {
+            // Solo suma y resta
+            operations = new char[] { '+', '-' };
+
+            if (correctAnswersCount == 0)
+            {
+                // Primera operación: mismo denominador
+                denominator2 = denominator1;
+            }
+        }
+        else
+        {
+            // Multiplicación o división
+            operations = new char[] { '*', '/' };
+        }
+
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
-        correctAnswer = ConvertToFractionResult(numerator1, denominator1, numerator2, denominator2, operation);
+        // Calcular el resultado correcto
+        correctAnswer = ConvertToFractionResult(
+            numerator1,
+            denominator1,
+            numerator2,
+            denominator2,
+            operation
+        );
+
         string fraction1 = $"{numerator1}/{denominator1}";
         string fraction2 = $"{numerator2}/{denominator2}";
 

@@ -2,3 +2,12 @@
 - no ta prioritario 
 -burbuja de respuesta (asi como en la interfaz que nos pasaron)
 -lo del efecto guitar hero
+
+---------------------------------------------------
+
+solo para recordarte cuales seria los puntos para refrescar. 
+- los bugs restante de los problemas 
+-los cuadros de las repeusta 
+- efecto de bordeado de los texto
+- por ultimo el efecto guietar hero
+- algo despeus ver el tema de las escala

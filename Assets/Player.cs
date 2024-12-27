@@ -106,7 +106,7 @@ public class Player : MonoBehaviour
                 mathProblemGenerator.totalAnswerCorrect += 1;
                 mathProblemGenerator.correctAnswersCount++;
                 mathProblemGenerator.AddScore(500);
-                if (mathProblemGenerator.correctAnswersCount >= 4)
+                if (mathProblemGenerator.correctAnswersCount >= 5)
                 {
                     mathProblemGenerator.LevelUp();
                 }
