@@ -5,6 +5,7 @@ using UnityEngine;
 public class ButtonAnimator : MonoBehaviour
 {
     [SerializeField] private GameObject[] buttons;
+    [SerializeField] private GameObject[] toggleButtons;
 
     [SerializeField] private Vector3[] initialPositions;
     [SerializeField] private Vector3[] finalPositions;
@@ -22,6 +23,15 @@ public class ButtonAnimator : MonoBehaviour
         {
             button.SetActive(false);
         }
+
+        foreach (GameObject toggleButton in toggleButtons)
+        {
+            SpriteRenderer sr = toggleButton.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = true;
+            }
+        }
     }
 
     public void ActivateAnimation()
@@ -31,6 +41,17 @@ public class ButtonAnimator : MonoBehaviour
 
     private IEnumerator AnimateButtons()
     {
+
+        foreach (GameObject toggleButton in toggleButtons)
+        {
+            SpriteRenderer sr = toggleButton.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = false;
+            }
+        }
+
+
         // Activa los botones primero
         foreach (GameObject button in buttons)
         {
@@ -67,6 +88,15 @@ public class ButtonAnimator : MonoBehaviour
             {
                 buttons[i].transform.localPosition = finalPositions[i];
                 buttons[i].transform.localScale = finalScales[i];
+            }
+        }
+
+        foreach (GameObject toggleButton in toggleButtons)
+        {
+            SpriteRenderer sr = toggleButton.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = true;
             }
         }
     }
