@@ -40,6 +40,13 @@ public class MathProblemGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (problemText != null)
+        {
+            // Aplica el color y grosor del borde
+            problemText.fontMaterial.SetColor("_OutlineColor", Color.red);
+            problemText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+        }
+
         SoundManager.Instance.PlayBackgroundSound(SoundManager.Instance.mainMenuSound, true);
         livesManager.InitializeLives(lives);
         if (player == null)

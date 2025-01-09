@@ -8,6 +8,9 @@ TagManager:
   - boton0
   - boton2
   - boton1
+  - burbuja0
+  - burbuja1
+  - burbuja2
   layers:
   - Default
   - TransparentFX

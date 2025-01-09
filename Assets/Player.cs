@@ -93,12 +93,22 @@ public class Player : MonoBehaviour
         {
             int correctIndex = mathProblemGenerator.GetCorrectAnswerIndex();
             GameObject correctButton = GameObject.FindWithTag($"boton{correctIndex}");
+            GameObject correctBurble = GameObject.FindWithTag($"burbuja{correctIndex}");
 
             if (correctButton == null)
             {
                 Debug.LogWarning($"No se encontró un botón con el tag: boton{correctIndex}");
                 return;
             }
+
+            if (correctBurble == null)
+            {
+                Debug.LogWarning($"No se encontró un botón con el tag: burbuja{correctIndex}");
+                return;
+            }
+
+            BurbujaScript burbujaScript = correctBurble.GetComponent<BurbujaScript>();
+            SpriteRenderer burbujaSpriteRenderer = correctBurble.GetComponent<SpriteRenderer>();
 
             if (currentPositionIndex == correctIndex)
             {
@@ -121,25 +131,53 @@ public class Player : MonoBehaviour
                 ShowFeedback(true);
 
                 if (correctButton != null)
-            {
-                ButtonScript buttonScript = correctButton.GetComponent<ButtonScript>();
-                if (buttonScript != null && buttonScript.winSprite != null)
                 {
-                    SpriteRenderer buttonSpriteRenderer = correctButton.GetComponent<SpriteRenderer>();
-                    if (buttonSpriteRenderer != null)
+                    ButtonScript buttonScript = correctButton.GetComponent<ButtonScript>();
+                    
+                    if (buttonScript != null && 
+                        buttonScript.winSprite != null)
                     {
-                        buttonSpriteRenderer.sprite = buttonScript.winSprite;
+                        SpriteRenderer buttonSpriteRenderer = correctButton.GetComponent<SpriteRenderer>();
+                        
+                        if (buttonSpriteRenderer != null)
+                        {
+                            buttonSpriteRenderer.sprite = buttonScript.winSprite;
+                        }
+
+                        if(burbujaSpriteRenderer != null)
+                        {
+                            burbujaSpriteRenderer.sprite = burbujaScript.winSprite;
+                        }
+
                     }
                 }
             }
-            }
             else
             {
+                GameObject wrongBurble = GameObject.FindWithTag($"burbuja{currentPositionIndex}");
+
+                SpriteRenderer wrongBurbujaSpriteRenderer = wrongBurble.GetComponent<SpriteRenderer>();
+                BurbujaScript wrongBurbujaScript = wrongBurble.GetComponent<BurbujaScript>();
+
+                if (wrongBurbujaSpriteRenderer != null && wrongBurbujaScript != null)
+                {
+                    wrongBurbujaSpriteRenderer.sprite = wrongBurbujaScript.errorSprite;
+                }
+
+                StartCoroutine(ResetSpriteAfterDelay(wrongBurbujaSpriteRenderer, wrongBurbujaScript.mainSprite, 0.5f));
                 mathProblemGenerator.correctAnswersCount = 0;
                 mathProblemGenerator.LoseLife();
                 ShowFeedback(false);
             }
+
+            StartCoroutine(ResetSpriteAfterDelay(burbujaSpriteRenderer, burbujaScript.mainSprite, 0.5f));
         }
+    }
+
+    private IEnumerator ResetSpriteAfterDelay(SpriteRenderer spriteRenderer, Sprite originalSprite, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        spriteRenderer.sprite = originalSprite;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
