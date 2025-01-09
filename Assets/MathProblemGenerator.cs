@@ -37,6 +37,8 @@ public class MathProblemGenerator : MonoBehaviour
     private int Answer1 = 1;
     private int Answer2 = 2;
 
+    public ButtonAnimator buttonAnimator;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -132,6 +134,12 @@ public class MathProblemGenerator : MonoBehaviour
                 GenerateMixedProblem();
                 setTimer = 10;
                 break;
+        }
+
+        // Activa la animación de los botones después de generar un nuevo problema
+        if (buttonAnimator != null)
+        {
+            buttonAnimator.ActivateAnimation();
         }
     }
 
