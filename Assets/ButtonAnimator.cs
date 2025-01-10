@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ButtonAnimator : MonoBehaviour
 {
     [SerializeField] private GameObject[] buttons;
     [SerializeField] private GameObject[] toggleButtons;
+    [SerializeField] private GameObject[] toggleBurbujas;
+    [SerializeField] private TextMeshProUGUI[] toggleTexts;
 
     [SerializeField] private Vector3[] initialPositions;
     [SerializeField] private Vector3[] finalPositions;
@@ -32,6 +35,23 @@ public class ButtonAnimator : MonoBehaviour
                 sr.enabled = true;
             }
         }
+
+        foreach (GameObject toggleBurbuja in toggleBurbujas)
+        {
+            SpriteRenderer sr = toggleBurbuja.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = true;
+            }
+        }
+
+        foreach (TextMeshProUGUI text in toggleTexts)
+        {
+            if (text != null)
+            {
+                text.enabled = true;
+            }
+        }
     }
 
     public void ActivateAnimation()
@@ -51,7 +71,6 @@ public class ButtonAnimator : MonoBehaviour
             }
         }
 
-
         // Activa los botones primero
         foreach (GameObject button in buttons)
         {
@@ -60,6 +79,24 @@ public class ButtonAnimator : MonoBehaviour
 
         // Espera antes de iniciar la animación
         yield return new WaitForSeconds(delayBeforeAnimation);
+
+        foreach (GameObject toggleBurbuja in toggleBurbujas)
+        {
+            SpriteRenderer sr = toggleBurbuja.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = false;
+            }
+        }
+
+        foreach (TextMeshProUGUI text in toggleTexts)
+        {
+            Debug.Log(text);
+            if (text != null)
+            {
+                text.enabled = false;
+            }
+        }
 
         float elapsedTime = 0f;
 
@@ -97,6 +134,23 @@ public class ButtonAnimator : MonoBehaviour
             if (sr != null)
             {
                 sr.enabled = true;
+            }
+        }
+
+        foreach (GameObject toggleBurbuja in toggleBurbujas)
+        {
+            SpriteRenderer sr = toggleBurbuja.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = true;
+            }
+        }
+
+        foreach (TextMeshProUGUI text in toggleTexts)
+        {
+            if (text != null)
+            {
+                text.enabled = true;
             }
         }
     }
