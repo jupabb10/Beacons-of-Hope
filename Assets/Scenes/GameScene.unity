@@ -1461,7 +1461,7 @@ Material:
     - _StencilWriteMask: 255
     - _UseUIAlphaClip: 0
     m_Colors:
-    - _WidthHeightRadius: {r: 2196.21, g: 1693.03, b: 80, a: 0}
+    - _WidthHeightRadius: {r: 3771.4106, g: 1693.0302, b: 80, a: 0}
   m_BuildTextureStacks: []
 --- !u!1 &909056457
 GameObject:
@@ -1676,7 +1676,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!224 &928392408
 RectTransform:
