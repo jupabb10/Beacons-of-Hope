@@ -31,7 +31,7 @@ public class MathProblemGenerator : MonoBehaviour
     private object correctAnswer;
     public int totalAnswerCorrect = 0;
     public int correctAnswersCount = 0;
-    public int level = 4; // Nivel inicial
+    public int level = 1; // Nivel inicial
     private int maxLevel = 4;
 
     private int Answer1 = 1;
@@ -68,6 +68,32 @@ public class MathProblemGenerator : MonoBehaviour
             Invoke(nameof(GenerateNewProblem), 0.1f);
             timer = setTimer;
         }
+    if (Input.GetKeyDown(KeyCode.Alpha1))
+    {
+        level = 1;
+        GenerateNewProblem();
+        LevelUp();
+    }
+    else if (Input.GetKeyDown(KeyCode.Alpha2))
+    {
+        level = 2;
+        GenerateNewProblem();
+        LevelUp();
+    }
+    else if (Input.GetKeyDown(KeyCode.Alpha3))
+    {
+        level = 3;
+        GenerateNewProblem();
+        LevelUp();
+    }
+    else if (Input.GetKeyDown(KeyCode.Alpha4))
+    {
+        level = 4;
+        GenerateNewProblem();
+        LevelUp();
+    }
+
+        
     }
 
     void changeTimer()
@@ -136,7 +162,7 @@ public class MathProblemGenerator : MonoBehaviour
                 break;
         }
 
-        // Activa la animación de los botones después de generar un nuevo problema
+        // Activa la animaciï¿½n de los botones despuï¿½s de generar un nuevo problema
         if (buttonAnimator != null)
         {
             buttonAnimator.ActivateAnimation();
@@ -165,10 +191,10 @@ public class MathProblemGenerator : MonoBehaviour
         }
         else
         {
-            operations = new char[] { '*', '/' }; // Multiplicación y división
+            operations = new char[] { '*', '/' }; // Multiplicaciï¿½n y divisiï¿½n
         }
 
-        // Selecciona la operación al azar de las permitidas
+        // Selecciona la operaciï¿½n al azar de las permitidas
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
         // Resuelve el problema y muestra
@@ -190,13 +216,13 @@ public class MathProblemGenerator : MonoBehaviour
         }
         else
         {
-            // Multiplicación o división con dos decimales
+            // Multiplicaciï¿½n o divisiï¿½n con dos decimales
             operations = new char[] { '*', '/' };
             num1 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Dos decimales
             num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Dos decimales
             if (operations.Contains('/') && num2 == 0)
             {
-                num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Evita división por cero
+                num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), 2); // Evita divisiï¿½n por cero
             }
         }
 
@@ -235,13 +261,13 @@ public class MathProblemGenerator : MonoBehaviour
 
             if (correctAnswersCount == 0)
             {
-                // Primera operación: mismo denominador
+                // Primera operaciï¿½n: mismo denominador
                 denominator2 = denominator1;
             }
         }
         else
         {
-            // Multiplicación o división
+            // Multiplicaciï¿½n o divisiï¿½n
             operations = new char[] { '*', '/' };
         }
 
@@ -281,7 +307,7 @@ public class MathProblemGenerator : MonoBehaviour
                 resultDenominator = denominator1 * denominator2;
                 break;
             default:
-                throw new System.Exception("Operación no válida");
+                throw new System.Exception("Operaciï¿½n no vï¿½lida");
         }
 
         int gcd = GCD(resultNumerator, resultDenominator);
@@ -302,17 +328,17 @@ public class MathProblemGenerator : MonoBehaviour
             GenerateFractionProblem();
     }
 
-    int SolveProblem(float num1, float num2, char operation)
+float SolveProblem(float num1, float num2, char operation)
+{
+    switch (operation)
     {
-        switch (operation)
-        {
-            case '+': return (int)(num1 + num2);
-            case '-': return (int)(num1 - num2);
-            case '*': return (int)(num1 * num2);
-            case '/': return (int)(num1 / num2);
-            default: return 0;
-        }
+        case '+': return num1 + num2;
+        case '-': return num1 - num2;
+        case '*': return num1 * num2;
+        case '/': return (num2 == 0) ? 0f : (num1 / num2);
+        default: return 0f;
     }
+}
 
     int SolveFractionProblem(int num1, int den1, int num2, int den2, char operation)
     {
@@ -332,22 +358,24 @@ public class MathProblemGenerator : MonoBehaviour
         return result;
     }
 
-    void DisplayProblem(string problem)
+void DisplayProblem(string problem)
+{
+    problemText.text = problem;
+    if (level == 1)
     {
-        problemText.text = problem;
-        if (level == 1)
-        {
-            AssignAnswers(correctAnswer);
-        }
-        else if (level == 2)
-        {
-            AssignAnswers((float)correctAnswer);
-        }
-        else if (level == 3 || level == 4)
-        {
-            AssignAnswers(correctAnswer.ToString());
-        }
+        AssignAnswers(correctAnswer);
     }
+    else if (level == 2)
+    {
+        AssignAnswers((float)correctAnswer);
+    }
+    else if (level == 3 || level >= 4)
+    {
+        AssignAnswers(correctAnswer.ToString());
+    }
+
+}
+
 
     void AssignAnswers(object correctAnswer)
     {
@@ -373,7 +401,7 @@ public class MathProblemGenerator : MonoBehaviour
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                         incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2"); // Redondear y formatear a 2 decimales
                     }
-                    else if (level == 3 || level == 4)
+                    else if (level == 3 || level >= 4)
                     {
                         incorrectAnswer = GenerateRandomFraction();
                     }
@@ -419,14 +447,14 @@ public class MathProblemGenerator : MonoBehaviour
 
     void ValidatePlayerPosition()
     {
-        // Busca el objeto del jugador y llama a su función de validación
+        // Busca el objeto del jugador y llama a su funciï¿½n de validaciï¿½n
         player.ValidatePosition();
     }
 
     public void AddScore(int points)
     {
         float timeBonus = CalculateTimeBonus();
-        int totalPoints = Mathf.RoundToInt(points * timeBonus); // Aplica la bonificación
+        int totalPoints = Mathf.RoundToInt(points * timeBonus); // Aplica la bonificaciï¿½n
         score += totalPoints;
 
         UpdateScoreText();
@@ -437,19 +465,19 @@ public class MathProblemGenerator : MonoBehaviour
         float timePercentage = (float)timer2 / setTimer;
 
         if (timePercentage > 0.75f)
-            return 3f; // Bonificación 3x
+            return 3f; // Bonificaciï¿½n 3x
         else if (timePercentage > 0.5f)
-            return 2f; // Bonificación 2x
+            return 2f; // Bonificaciï¿½n 2x
         else if (timePercentage > 0.25f)
-            return 1.25f; // Bonificación 1.25xchangeTimer
+            return 1.25f; // Bonificaciï¿½n 1.25xchangeTimer
         else
-            return 1f; // Sin bonificación
+            return 1f; // Sin bonificaciï¿½n
     }
 
 
     private void UpdateScoreText()
     {
-        // Formatear el texto con "Score" y un número de 7 dígitos
+        // Formatear el texto con "Score" y un nï¿½mero de 7 dï¿½gitos
         ScoreText.text = $"Score {score:D7}";
     }
 }
