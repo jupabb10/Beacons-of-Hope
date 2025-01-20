@@ -91,7 +91,6 @@ public class ButtonAnimator : MonoBehaviour
 
         foreach (TextMeshProUGUI text in toggleTexts)
         {
-            Debug.Log(text);
             if (text != null)
             {
                 text.enabled = false;

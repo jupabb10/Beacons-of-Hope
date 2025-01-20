@@ -47,6 +47,11 @@ public class MathProblemGenerator : MonoBehaviour
             // Aplica el color y grosor del borde
             problemText.fontMaterial.SetColor("_OutlineColor", Color.red);
             problemText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+
+            levelText.fontMaterial.SetColor("_OutlineColor", Color.black);
+            levelText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+            timerText.fontMaterial.SetColor("_OutlineColor", Color.black);
+            timerText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
         }
 
         SoundManager.Instance.PlayBackgroundSound(SoundManager.Instance.mainMenuSound, true);
@@ -172,7 +177,23 @@ public class MathProblemGenerator : MonoBehaviour
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
 
         // Resuelve el problema y muestra
-        correctAnswer = SolveProblem(num1, num2, operation);
+        //correctAnswer = SolveProblem(num1, num2, operation);
+        if (operation == '/')
+        {
+            // Asegurarse de no dividir por 0
+            while (num2 == 0)
+            {
+                num2 = UnityEngine.Random.Range(1, 11);
+            }
+
+            // División con 2 decimales
+            correctAnswer = MathF.Round((float)num1 / num2, 2);
+        }
+        else
+        {
+            correctAnswer = SolveProblem(num1, num2, operation);
+        }
+
         DisplayProblem($"{num1} {operation} {num2}");
     }
 
@@ -246,6 +267,18 @@ public class MathProblemGenerator : MonoBehaviour
         }
 
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
+
+        if (denominator1 < 0)
+        {
+            numerator1 = -numerator1; // Poner el signo en el numerador
+            denominator1 = Mathf.Abs(denominator1); // Hacer positivo el denominador
+        }
+
+        if (denominator2 < 0)
+        {
+            numerator2 = -numerator2; // Poner el signo en el numerador
+            denominator2 = Mathf.Abs(denominator2); // Hacer positivo el denominador
+        }
 
         // Calcular el resultado correcto
         correctAnswer = ConvertToFractionResult(
@@ -343,7 +376,7 @@ public class MathProblemGenerator : MonoBehaviour
         {
             AssignAnswers((float)correctAnswer);
         }
-        else if (level == 3 || level == 4)
+        else if (level == 3 || level >= 4)
         {
             AssignAnswers(correctAnswer.ToString());
         }
@@ -364,8 +397,19 @@ public class MathProblemGenerator : MonoBehaviour
                 {
                     if (level == 1)
                     {
-                        int deviation = UnityEngine.Random.Range(-9, 10);
-                        incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
+                        if (correctAnswer is float)
+                        {
+                            // Generar desviación para divisiones (valores decimales)
+                            float deviation = UnityEngine.Random.Range(-1f, 1f);
+                            float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
+                            incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
+                        }
+                        else
+                        {
+                            // Generar desviación para valores enteros
+                            int deviation = UnityEngine.Random.Range(-9, 10);
+                            incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
+                        }
                     }
                     else if (level == 2)
                     {
@@ -373,7 +417,7 @@ public class MathProblemGenerator : MonoBehaviour
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                         incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2"); // Redondear y formatear a 2 decimales
                     }
-                    else if (level == 3 || level == 4)
+                    else if (level == 3 || level >= 4)
                     {
                         incorrectAnswer = GenerateRandomFraction();
                     }
