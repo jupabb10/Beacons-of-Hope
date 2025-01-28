@@ -116,12 +116,12 @@ public class Player : MonoBehaviour
                 mathProblemGenerator.totalAnswerCorrect += 1;
                 mathProblemGenerator.correctAnswersCount++;
                 mathProblemGenerator.AddScore(500);
-                if (mathProblemGenerator.correctAnswersCount >= 5)
+                if (mathProblemGenerator.correctAnswersCount >= 8)
                 {
                     mathProblemGenerator.LevelUp();
                 }
 
-                if(mathProblemGenerator.level == 4 && mathProblemGenerator.correctAnswersCount > 3)
+                if(mathProblemGenerator.level == 4 && mathProblemGenerator.correctAnswersCount > 3 && mathProblemGenerator.correctAnswersCount >= 8)
                 {
                     mathProblemGenerator.lives += 1;
                     mathProblemGenerator.livesManager.UpdateLives(mathProblemGenerator.lives);

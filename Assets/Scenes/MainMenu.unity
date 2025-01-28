@@ -180,11 +180,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'JUEGO
+  m_text: 'Rock''n
 
-    DE
-
-    MATE'
+    Score'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e348ed2db4dac1f4e9881e057e32ce5b, type: 2}
   m_sharedMaterial: {fileID: -5836575007070284480, guid: e348ed2db4dac1f4e9881e057e32ce5b, type: 2}

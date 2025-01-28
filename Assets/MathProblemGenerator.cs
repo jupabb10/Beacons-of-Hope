@@ -147,24 +147,53 @@ public class MathProblemGenerator : MonoBehaviour
 
     public void GenerateNewProblem()
     {
-        switch (level)
+        if (level <= 6)
         {
-            case 1:
-                GenerateBasicProblem();
-                setTimer = 25;
-                break;
-            case 2:
-                GenerateDecimalProblem();
-                setTimer = 20;
-                break;
-            case 3:
-                GenerateFractionProblem();
-                setTimer = 15;
-                break;
-            default:
-                GenerateMixedProblem();
-                setTimer = 10;
-                break;
+            switch (level)
+            {
+                case 1: // Principiante
+                    GenerateProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                    setTimer = 25;
+                    break;
+                case 2: // Semi pro (decimales)
+                    GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                    setTimer = 20;
+                    break;
+                case 3: // Pro (fracciones)
+                    GenerateFractionProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                    setTimer = 15;
+                    break;
+                case 4: // Experto (mezclado)
+                    GenerateMixedProblem(2);
+                    setTimer = 10;
+                    break;
+                case 5: // Genio (3 dígitos)
+                    GenerateLargeNumberProblem(3, 2);
+                    setTimer = 15;
+                    break;
+                case 6: // Leyenda (4 dígitos)
+                    GenerateLargeNumberProblem(4, 2);
+                    setTimer = 20;
+                    break;
+            }
+        }
+        else
+        {
+            // Después del nivel 6, problemas aleatorios como en el nivel 4 en adelante
+            int randomFunction = UnityEngine.Random.Range(1, 4); // Elegir entre las 3 funciones
+            switch (randomFunction)
+            {
+                case 1:
+                    GenerateMixedProblem(2);
+                    break;
+                case 2:
+                    GenerateLargeNumberProblem(3, 2); // Números de 3 dígitos
+                    break;
+                case 3:
+                    GenerateLargeNumberProblem(4, 2); // Números de 4 dígitos
+                    break;
+            }
+            setTimer = Mathf.Max(5, 25 - (level - 6)); // Reduce el tiempo con el nivel, mínimo 5 segundos
         }
 
         // Activa la animaci�n de los botones despu�s de generar un nuevo problema
@@ -183,6 +212,32 @@ public class MathProblemGenerator : MonoBehaviour
             a = temp;
         }
         return a;
+    }
+
+    void GenerateProblemByOperationSet(char[] operations, int problemsPerOperation)
+    {
+        int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
+        char operation = operations[operationIndex];
+        int num1 = UnityEngine.Random.Range(1, 11);
+        int num2 = UnityEngine.Random.Range(1, 11);
+
+        if (operation == '/')
+        {
+            // Asegurarse de no dividir por 0
+            while (num2 == 0)
+            {
+                num2 = UnityEngine.Random.Range(1, 11);
+            }
+
+            // Divisi�n con 2 decimales
+            correctAnswer = MathF.Round((float)num1 / num2, 2);
+        }
+        else
+        {
+            correctAnswer = SolveProblem(num1, num2, operation);
+        }
+
+        DisplayProblem($"{num1} {operation} {num2}");
     }
 
     void GenerateBasicProblem()
@@ -221,6 +276,32 @@ public class MathProblemGenerator : MonoBehaviour
         }
 
         DisplayProblem($"{num1} {operation} {num2}");
+    }
+
+    void GenerateDecimalProblemByOperationSet(char[] operations, int problemsPerOperation)
+    {
+        int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
+        char operation = operations[operationIndex];
+        float num1 = UnityEngine.Random.Range(1f, 10f);
+        float num2 = UnityEngine.Random.Range(1f, 10f);
+
+        switch (operation)
+        {
+            case '+':
+                correctAnswer = MathF.Round(num1 + num2, 2);
+                break;
+            case '-':
+                correctAnswer = MathF.Round(num1 - num2, 2);
+                break;
+            case '*':
+                correctAnswer = MathF.Round(num1 * num2, 2);
+                break;
+            case '/':
+                correctAnswer = MathF.Round(num1 / num2, 2);
+                break;
+        }
+
+        DisplayProblem($"{num1:F2} {operation} {num2:F2}");
     }
 
     void GenerateDecimalProblem()
@@ -267,6 +348,13 @@ public class MathProblemGenerator : MonoBehaviour
         DisplayProblem($"{num1:F2} {operation} {num2:F2}");
     }
 
+    void GenerateFractionProblemByOperationSet(char[] operations, int problemsPerOperation)
+    {
+        int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
+        char operation = operations[operationIndex];
+        GenerateFractionProblem();
+    }
+
     void GenerateFractionProblem()
     {
         int numerator1 = UnityEngine.Random.Range(1, 11);
@@ -289,7 +377,7 @@ public class MathProblemGenerator : MonoBehaviour
         else
         {
             // Multiplicaci�n o divisi�n
-            operations = new char[] { '*', '/' };
+            operations = new char[] { '*' };
         }
 
         char operation = operations[UnityEngine.Random.Range(0, operations.Length)];
@@ -350,18 +438,61 @@ public class MathProblemGenerator : MonoBehaviour
         return $"{resultNumerator}/{resultDenominator}";
     }
 
-    void GenerateMixedProblem()
+    void GenerateMixedProblem(int problemsPerOperation)
     {
-        int type = UnityEngine.Random.Range(1, 4);
-        if (type == 1)
-            GenerateBasicProblem();
-        else if (type == 2)
-            GenerateDecimalProblem();
-        else
-            GenerateFractionProblem();
+        //char[] allOperations = { '+', '-', '*', '/' };
+        //int operationIndex = (correctAnswersCount / problemsPerOperation) % allOperations.Length;
+        //char operation = allOperations[operationIndex];
+
+        //int num1 = UnityEngine.Random.Range(1, 101);
+        //int num2 = UnityEngine.Random.Range(1, 101);
+
+        //correctAnswer = SolveProblem(num1, num2, operation);
+        //DisplayProblem($"{num1} {operation} {num2}");
+
+        int randomFunction = UnityEngine.Random.Range(1, 4); // Elegir entre las 3 funciones
+        switch (randomFunction)
+        {
+            case 1: // Principiante
+                GenerateProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                setTimer = 25;
+                break;
+            case 2: // Semi pro (decimales)
+                GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                setTimer = 20;
+                break;
+            case 3: // Pro (fracciones)
+                GenerateFractionProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                setTimer = 15;
+                break;
+        }
     }
 
-float SolveProblem(float num1, float num2, char operation)
+    //void GenerateMixedProblem()
+    //{
+    //    int type = UnityEngine.Random.Range(1, 4);
+    //    if (type == 1)
+    //        GenerateBasicProblem();
+    //    else if (type == 2)
+    //        GenerateDecimalProblem();
+    //    else
+    //        GenerateFractionProblem();
+    //}
+
+    void GenerateLargeNumberProblem(int digits, int problemsPerOperation)
+    {
+        char[] allOperations = { '+', '-', '*', '/' };
+        int operationIndex = (correctAnswersCount / problemsPerOperation) % allOperations.Length;
+        char operation = allOperations[operationIndex];
+
+        int num1 = UnityEngine.Random.Range((int)Mathf.Pow(10, digits - 1), (int)Mathf.Pow(10, digits));
+        int num2 = UnityEngine.Random.Range((int)Mathf.Pow(10, digits - 1), (int)Mathf.Pow(10, digits));
+
+        correctAnswer = SolveProblem(num1, num2, operation);
+        DisplayProblem($"{num1} {operation} {num2}");
+    }
+
+    float SolveProblem(float num1, float num2, char operation)
 {
     switch (operation)
     {
@@ -407,24 +538,6 @@ float SolveProblem(float num1, float num2, char operation)
             AssignAnswers(correctAnswer.ToString());
         }
     }
-void DisplayProblem(string problem)
-{
-    problemText.text = problem;
-    if (level == 1)
-    {
-        AssignAnswers(correctAnswer);
-    }
-    else if (level == 2)
-    {
-        AssignAnswers((float)correctAnswer);
-    }
-    else if (level == 3 || level >= 4)
-    {
-        AssignAnswers(correctAnswer.ToString());
-    }
-
-}
-
 
     void AssignAnswers(object correctAnswer)
     {
@@ -443,14 +556,12 @@ void DisplayProblem(string problem)
                     {
                         if (correctAnswer is float)
                         {
-                            // Generar desviaci�n para divisiones (valores decimales)
                             float deviation = UnityEngine.Random.Range(-1f, 1f);
                             float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                             incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
                         }
                         else
                         {
-                            // Generar desviaci�n para valores enteros
                             int deviation = UnityEngine.Random.Range(-9, 10);
                             incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
                         }
@@ -459,12 +570,34 @@ void DisplayProblem(string problem)
                     {
                         float deviation = UnityEngine.Random.Range(-1f, 1f);
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
-                        incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2"); // Redondear y formatear a 2 decimales
+                        incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
                     }
-                    else if (level == 3 || level >= 4)
-                    else if (level == 3 || level >= 4)
+                    else if (level == 3 || level == 4)
                     {
                         incorrectAnswer = GenerateRandomFraction();
+                    }
+                    else if (level >= 5)
+                    {
+                        // Niveles 5 y superiores: Generar desviaciones más cercanas
+                        if (correctAnswer is int correctValueInt)
+                        {
+                            int deviation = UnityEngine.Random.Range(-200, 201);
+                            incorrectAnswer = (correctValueInt + deviation).ToString();
+                        }
+                        else if (correctAnswer is float correctValueFloat)
+                        {
+                            float deviation = UnityEngine.Random.Range(-200f, 200f);
+                            incorrectAnswer = MathF.Round(correctValueFloat + deviation, 2).ToString("F2");
+                        }
+                        else if (correctAnswer is string correctValueString)
+                        {
+                            // Generar fracciones o valores cercanos como texto
+                            incorrectAnswer = GenerateRandomFraction();
+                        }
+                        else
+                        {
+                            throw new System.Exception("Tipo de respuesta no manejado para niveles 5 y superiores.");
+                        }
                     }
                     else
                     {
@@ -503,7 +636,31 @@ void DisplayProblem(string problem)
     {
         level++;
         correctAnswersCount = 0;
-        levelText.text = $"Nivel {level}";
+
+        switch (level)
+        {
+            case 1:
+                levelText.text = "Principiante";
+                break;
+            case 2:
+                levelText.text = "Semi pro";
+                break;
+            case 3:
+                levelText.text = "Pro";
+                break;
+            case 4:
+                levelText.text = "Experto";
+                break;
+            case 5:
+                levelText.text = "Genio";
+                break;
+            case 6:
+                levelText.text = "Leyenda";
+                break;
+            default:
+                levelText.text = "Leyenda";
+                break;
+        }
     }
 
     void ValidatePlayerPosition()
