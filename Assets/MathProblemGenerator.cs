@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using System.Linq;
+using System.ComponentModel;
 
 public class MathProblemGenerator : MonoBehaviour
 {
@@ -237,7 +238,8 @@ public class MathProblemGenerator : MonoBehaviour
             correctAnswer = SolveProblem(num1, num2, operation);
         }
 
-        DisplayProblem($"{num1} {operation} {num2}");
+
+        DisplayProblem($"{num1} {operation} {num2}", operation);
     }
 
     void GenerateBasicProblem()
@@ -275,7 +277,7 @@ public class MathProblemGenerator : MonoBehaviour
             correctAnswer = SolveProblem(num1, num2, operation);
         }
 
-        DisplayProblem($"{num1} {operation} {num2}");
+        DisplayProblem($"{num1} {operation} {num2}", operation);
     }
 
     void GenerateDecimalProblemByOperationSet(char[] operations, int problemsPerOperation)
@@ -301,7 +303,7 @@ public class MathProblemGenerator : MonoBehaviour
                 break;
         }
 
-        DisplayProblem($"{num1:F2} {operation} {num2:F2}");
+        DisplayProblem($"{num1:F2} {operation} {num2:F2}", operation);
     }
 
     void GenerateDecimalProblem()
@@ -345,7 +347,7 @@ public class MathProblemGenerator : MonoBehaviour
                 break;
         }
 
-        DisplayProblem($"{num1:F2} {operation} {num2:F2}");
+        DisplayProblem($"{num1:F2} {operation} {num2:F2}", operation);
     }
 
     void GenerateFractionProblemByOperationSet(char[] operations, int problemsPerOperation)
@@ -406,7 +408,7 @@ public class MathProblemGenerator : MonoBehaviour
         string fraction1 = $"{numerator1}/{denominator1}";
         string fraction2 = $"{numerator2}/{denominator2}";
 
-        DisplayProblem($"{fraction1} {operation} {fraction2}");
+        DisplayProblem($"{fraction1} {operation} {fraction2}", operation);
     }
 
     string ConvertToFractionResult(int numerator1, int denominator1, int numerator2, int denominator2, char operation)
@@ -489,20 +491,20 @@ public class MathProblemGenerator : MonoBehaviour
         int num2 = UnityEngine.Random.Range((int)Mathf.Pow(10, digits - 1), (int)Mathf.Pow(10, digits));
 
         correctAnswer = SolveProblem(num1, num2, operation);
-        DisplayProblem($"{num1} {operation} {num2}");
+        DisplayProblem($"{num1} {operation} {num2}", operation);
     }
 
     float SolveProblem(float num1, float num2, char operation)
-{
-    switch (operation)
     {
-        case '+': return num1 + num2;
-        case '-': return num1 - num2;
-        case '*': return num1 * num2;
-        case '/': return (num2 == 0) ? 0f : (num1 / num2);
-        default: return 0f;
+        switch (operation)
+        {
+            case '+': return num1 + num2;
+            case '-': return num1 - num2;
+            case '*': return num1 * num2;
+            case '/': return (num2 == 0) ? 0f : (num1 / num2);
+            default: return 0f;
+        }
     }
-}
 
     int SolveFractionProblem(int num1, int den1, int num2, int den2, char operation)
     {
@@ -522,24 +524,24 @@ public class MathProblemGenerator : MonoBehaviour
         return result;
     }
 
-    void DisplayProblem(string problem)
+    void DisplayProblem(string problem, char operation)
     {
         problemText.text = problem;
         if (level == 1)
         {
-            AssignAnswers(correctAnswer);
+            AssignAnswers(correctAnswer, operation);
         }
         else if (level == 2)
         {
-            AssignAnswers((float)correctAnswer);
+            AssignAnswers((float)correctAnswer, operation);
         }
         else if (level == 3 || level >= 4)
         {
-            AssignAnswers(correctAnswer.ToString());
+            AssignAnswers(correctAnswer.ToString(), operation);
         }
     }
 
-    void AssignAnswers(object correctAnswer)
+    void AssignAnswers(object correctAnswer, char operation)
     {
         string[] answers = new string[3];
         correctAnswerIndex = UnityEngine.Random.Range(0, 3);
@@ -552,9 +554,19 @@ public class MathProblemGenerator : MonoBehaviour
                 string incorrectAnswer;
                 do
                 {
-                    if (level == 1)
+                    if (operation == '/')
                     {
-                        if (correctAnswer is float)
+                        // Asegurar que las divisiones siempre tengan 2 decimales
+                        float deviation = UnityEngine.Random.Range(-1f, 1f);
+                        float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
+                        incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
+                    }
+
+                    else if (level == 1)
+                    {
+                        var validateType = Int32.Parse(correctAnswer.ToString());
+               
+                        if (!(validateType is int))
                         {
                             float deviation = UnityEngine.Random.Range(-1f, 1f);
                             float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
