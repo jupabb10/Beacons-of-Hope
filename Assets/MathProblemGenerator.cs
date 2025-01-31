@@ -153,7 +153,7 @@ public class MathProblemGenerator : MonoBehaviour
             switch (level)
             {
                 case 1: // Principiante
-                    GenerateProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                    GenerateProblemByOperationSet(new char[] { '*', '/' }, 4);
                     setTimer = 25;
                     break;
                 case 2: // Semi pro (decimales)
@@ -194,7 +194,7 @@ public class MathProblemGenerator : MonoBehaviour
                     GenerateLargeNumberProblem(4, 2); // Números de 4 dígitos
                     break;
             }
-            setTimer = Mathf.Max(5, 25 - (level - 6)); // Reduce el tiempo con el nivel, mínimo 5 segundos
+            setTimer = 8;
         }
 
         // Activa la animaci�n de los botones despu�s de generar un nuevo problema
@@ -442,17 +442,9 @@ public class MathProblemGenerator : MonoBehaviour
 
     void GenerateMixedProblem(int problemsPerOperation)
     {
-        //char[] allOperations = { '+', '-', '*', '/' };
-        //int operationIndex = (correctAnswersCount / problemsPerOperation) % allOperations.Length;
-        //char operation = allOperations[operationIndex];
 
-        //int num1 = UnityEngine.Random.Range(1, 101);
-        //int num2 = UnityEngine.Random.Range(1, 101);
 
-        //correctAnswer = SolveProblem(num1, num2, operation);
-        //DisplayProblem($"{num1} {operation} {num2}");
-
-        int randomFunction = UnityEngine.Random.Range(1, 4); // Elegir entre las 3 funciones
+        int randomFunction = UnityEngine.Random.Range(1, 5); // Elegir entre las 3 funciones
         switch (randomFunction)
         {
             case 1: // Principiante
