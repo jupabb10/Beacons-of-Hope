@@ -22,6 +22,7 @@ public class MathProblemGenerator : MonoBehaviour
     public TextMeshProUGUI ScoreText; // Campo para mostrar el problema
 
     public TextMeshProUGUI timerText; // Campo para mostrar el problema
+    public TextMeshProUGUI extraLiveText;
     public int score = 0;
     public int lives = 3;
     public int timer = 25;
@@ -120,6 +121,8 @@ public class MathProblemGenerator : MonoBehaviour
     {
         lives -= 1;
         livesManager.UpdateLives(lives);
+        var extraLive = lives - 3;
+        extraLiveText.text = extraLive > 0 ? $"+{extraLive}" : "";
 
         if (lives <= 0)
         {
@@ -153,7 +156,7 @@ public class MathProblemGenerator : MonoBehaviour
             switch (level)
             {
                 case 1: // Principiante
-                    GenerateProblemByOperationSet(new char[] { '*', '/' }, 4);
+                    GenerateProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
                     setTimer = 25;
                     break;
                 case 2: // Semi pro (decimales)
@@ -442,13 +445,11 @@ public class MathProblemGenerator : MonoBehaviour
 
     void GenerateMixedProblem(int problemsPerOperation)
     {
-
-
         int randomFunction = UnityEngine.Random.Range(1, 5); // Elegir entre las 3 funciones
         switch (randomFunction)
         {
             case 1: // Principiante
-                GenerateProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                GenerateProblemByOperationSet(new char[] { '*', '/' }, 4);
                 setTimer = 25;
                 break;
             case 2: // Semi pro (decimales)
@@ -546,13 +547,13 @@ public class MathProblemGenerator : MonoBehaviour
                 string incorrectAnswer;
                 do
                 {
-                    if (operation == '/')
+                    if (level == 2)
                     {
-                        // Asegurar que las divisiones siempre tengan 2 decimales
                         float deviation = UnityEngine.Random.Range(-1f, 1f);
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                         incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
                     }
+                    
 
                     else if (level == 1)
                     {
@@ -570,8 +571,9 @@ public class MathProblemGenerator : MonoBehaviour
                             incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
                         }
                     }
-                    else if (level == 2)
+                    else if (operation == '/')
                     {
+                        // Asegurar que las divisiones siempre tengan 2 decimales
                         float deviation = UnityEngine.Random.Range(-1f, 1f);
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                         incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");

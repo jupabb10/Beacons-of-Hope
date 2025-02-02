@@ -121,10 +121,12 @@ public class Player : MonoBehaviour
                     mathProblemGenerator.LevelUp();
                 }
 
-                if(mathProblemGenerator.level == 4 && mathProblemGenerator.correctAnswersCount > 3 && mathProblemGenerator.correctAnswersCount >= 8)
+                if(mathProblemGenerator.level >= 4 && mathProblemGenerator.correctAnswersCount >= 4)
                 {
                     mathProblemGenerator.lives += 1;
                     mathProblemGenerator.livesManager.UpdateLives(mathProblemGenerator.lives);
+                    var extraLive = mathProblemGenerator.lives - 3;
+                    mathProblemGenerator.extraLiveText.text = extraLive > 0 ? $"+{extraLive}" : "";
                 }
 
                 SoundManager.Instance.PlayEffectSound(SoundManager.Instance.correctSound);
