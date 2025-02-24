@@ -156,26 +156,32 @@ public class MathProblemGenerator : MonoBehaviour
             switch (level)
             {
                 case 1: // Principiante
+                Debug.Log("Principiante");
                     GenerateProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
                     setTimer = 25;
                     break;
                 case 2: // Semi pro (decimales)
-                    GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                Debug.Log("Semi pro");
+                    GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2,1);
                     setTimer = 20;
                     break;
                 case 3: // Pro (fracciones)
+                Debug.Log("Pro");
                     GenerateFractionProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
                     setTimer = 15;
                     break;
                 case 4: // Experto (mezclado)
+                Debug.Log("Experto");
                     GenerateMixedProblem(2);
                     setTimer = 10;
                     break;
                 case 5: // Genio (3 dígitos)
+                Debug.Log("Genio");
                     GenerateLargeNumberProblem(3, 2);
                     setTimer = 15;
                     break;
                 case 6: // Leyenda (4 dígitos)
+                Debug.Log("Leyenda");
                     GenerateLargeNumberProblem(4, 2);
                     setTimer = 20;
                     break;
@@ -283,31 +289,32 @@ public class MathProblemGenerator : MonoBehaviour
         DisplayProblem($"{num1} {operation} {num2}", operation);
     }
 
-    void GenerateDecimalProblemByOperationSet(char[] operations, int problemsPerOperation)
+void GenerateDecimalProblemByOperationSet(char[] operations, int problemsPerOperation, int decimalPlaces)
+{
+    int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
+    char operation = operations[operationIndex];
+    float num1 = MathF.Round(UnityEngine.Random.Range(1f, 10f), decimalPlaces);
+    float num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), decimalPlaces);
+
+    switch (operation)
     {
-        int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
-        char operation = operations[operationIndex];
-        float num1 = UnityEngine.Random.Range(1f, 10f);
-        float num2 = UnityEngine.Random.Range(1f, 10f);
-
-        switch (operation)
-        {
-            case '+':
-                correctAnswer = MathF.Round(num1 + num2, 2);
-                break;
-            case '-':
-                correctAnswer = MathF.Round(num1 - num2, 2);
-                break;
-            case '*':
-                correctAnswer = MathF.Round(num1 * num2, 2);
-                break;
-            case '/':
-                correctAnswer = MathF.Round(num1 / num2, 2);
-                break;
-        }
-
-        DisplayProblem($"{num1:F2} {operation} {num2:F2}", operation);
+        case '+':
+            correctAnswer = MathF.Round(num1 + num2, decimalPlaces);
+            break;
+        case '-':
+            correctAnswer = MathF.Round(num1 - num2, decimalPlaces);
+            break;
+        case '*':
+            correctAnswer = MathF.Round(num1 * num2, decimalPlaces);
+            break;
+        case '/':
+            correctAnswer = MathF.Round(num1 / num2, decimalPlaces);
+            break;
     }
+
+Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {correctAnswer}");
+    DisplayProblem($"{MathF.Round(num1, decimalPlaces)} {operation} {MathF.Round(num2, decimalPlaces)}", operation);
+}
 
     void GenerateDecimalProblem()
     {
@@ -453,7 +460,7 @@ public class MathProblemGenerator : MonoBehaviour
                 setTimer = 25;
                 break;
             case 2: // Semi pro (decimales)
-                GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
+                GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2,2);
                 setTimer = 20;
                 break;
             case 3: // Pro (fracciones)
@@ -547,13 +554,19 @@ public class MathProblemGenerator : MonoBehaviour
                 string incorrectAnswer;
                 do
                 {
-                    if (level == 2)
+if (level == 2)
+{
+    float deviation = UnityEngine.Random.Range(-1f, 1f);
+    float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
+    incorrectAnswer = MathF.Round(generatedAnswer, 1).ToString("F1");
+}
+                    else if (operation == '/')
                     {
+                        // Asegurar que las divisiones siempre tengan 2 decimales
                         float deviation = UnityEngine.Random.Range(-1f, 1f);
                         float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
                         incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
                     }
-                    
 
                     else if (level == 1)
                     {
@@ -571,13 +584,7 @@ public class MathProblemGenerator : MonoBehaviour
                             incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
                         }
                     }
-                    else if (operation == '/')
-                    {
-                        // Asegurar que las divisiones siempre tengan 2 decimales
-                        float deviation = UnityEngine.Random.Range(-1f, 1f);
-                        float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
-                        incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
-                    }
+
                     else if (level == 3 || level == 4)
                     {
                         incorrectAnswer = GenerateRandomFraction();
