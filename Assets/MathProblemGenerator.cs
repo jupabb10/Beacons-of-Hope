@@ -178,12 +178,12 @@ public class MathProblemGenerator : MonoBehaviour
                 case 5: // Genio (3 dígitos)
                 Debug.Log("Genio");
                     GenerateLargeNumberProblem(3, 2);
-                    setTimer = 15;
+                    setTimer = 8;
                     break;
                 case 6: // Leyenda (4 dígitos)
                 Debug.Log("Leyenda");
                     GenerateLargeNumberProblem(4, 2);
-                    setTimer = 20;
+                    setTimer = 6;
                     break;
             }
         }
@@ -494,17 +494,22 @@ Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {c
         DisplayProblem($"{num1} {operation} {num2}", operation);
     }
 
-    float SolveProblem(float num1, float num2, char operation)
+float SolveProblem(float num1, float num2, char operation)
+{
+    switch (operation)
     {
-        switch (operation)
-        {
-            case '+': return num1 + num2;
-            case '-': return num1 - num2;
-            case '*': return num1 * num2;
-            case '/': return (num2 == 0) ? 0f : (num1 / num2);
-            default: return 0f;
-        }
+        case '+': 
+            return num1 + num2;
+        case '-': 
+            return num1 - num2;
+        case '*': 
+            return num1 * num2;
+        case '/': 
+            return (num2 == 0) ? 0f : MathF.Round(num1 / num2, 2); // Redondear a 2 decimales
+        default: 
+            return 0f;
     }
+}
 
     int SolveFractionProblem(int num1, int den1, int num2, int den2, char operation)
     {
@@ -535,9 +540,13 @@ Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {c
         {
             AssignAnswers((float)correctAnswer, operation);
         }
-        else if (level == 3 || level >= 4)
+        else if (level == 3 || level == 4)
         {
             AssignAnswers(correctAnswer.ToString(), operation);
+        }
+        else if (level >= 5)
+        {
+            AssignAnswers(correctAnswer, operation);
         }
     }
 
@@ -554,12 +563,12 @@ Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {c
                 string incorrectAnswer;
                 do
                 {
-if (level == 2)
-{
-    float deviation = UnityEngine.Random.Range(-1f, 1f);
-    float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
-    incorrectAnswer = MathF.Round(generatedAnswer, 1).ToString("F1");
-}
+        if (level == 2)
+        {
+            float deviation = UnityEngine.Random.Range(-1f, 1f);
+            float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
+            incorrectAnswer = MathF.Round(generatedAnswer, 1).ToString("F1");
+        }
                     else if (operation == '/')
                     {
                         // Asegurar que las divisiones siempre tengan 2 decimales
@@ -587,31 +596,32 @@ if (level == 2)
 
                     else if (level == 3 || level == 4)
                     {
+                        Debug.Log("Level 3 o 4");
                         incorrectAnswer = GenerateRandomFraction();
+
+                        Debug.Log(incorrectAnswer);
+                        Debug.Log($"level: {level}");
                     }
-                    else if (level >= 5)
-                    {
-                        // Niveles 5 y superiores: Generar desviaciones más cercanas
-                        if (correctAnswer is int correctValueInt)
+
+else if (level >= 5)
+{
+    Debug.Log("Level 5 o superior");
+    // Niveles 5 y superiores: Generar desviaciones más cercanas
+                 var validateType = Int32.Parse(correctAnswer.ToString());
+               
+                        if (!(validateType is int))
                         {
-                            int deviation = UnityEngine.Random.Range(-200, 201);
-                            incorrectAnswer = (correctValueInt + deviation).ToString();
-                        }
-                        else if (correctAnswer is float correctValueFloat)
-                        {
-                            float deviation = UnityEngine.Random.Range(-200f, 200f);
-                            incorrectAnswer = MathF.Round(correctValueFloat + deviation, 2).ToString("F2");
-                        }
-                        else if (correctAnswer is string correctValueString)
-                        {
-                            // Generar fracciones o valores cercanos como texto
-                            incorrectAnswer = GenerateRandomFraction();
+                            float deviation = UnityEngine.Random.Range(-1f, 1f);
+                            float generatedAnswer = Convert.ToSingle(correctAnswer) + deviation;
+                            incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
                         }
                         else
                         {
-                            throw new System.Exception("Tipo de respuesta no manejado para niveles 5 y superiores.");
+                            int deviation = UnityEngine.Random.Range(-9, 10);
+                            incorrectAnswer = (Convert.ToInt32(correctAnswer) + deviation).ToString();
                         }
-                    }
+}
+
                     else
                     {
                         throw new System.Exception("Tipo de respuesta desconocido");
