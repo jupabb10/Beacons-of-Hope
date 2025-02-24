@@ -457,15 +457,12 @@ Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {c
         {
             case 1: // Principiante
                 GenerateProblemByOperationSet(new char[] { '*', '/' }, 4);
-                setTimer = 25;
                 break;
             case 2: // Semi pro (decimales)
                 GenerateDecimalProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2,2);
-                setTimer = 20;
                 break;
             case 3: // Pro (fracciones)
                 GenerateFractionProblemByOperationSet(new char[] { '+', '-', '*', '/' }, 2);
-                setTimer = 15;
                 break;
         }
     }
@@ -594,14 +591,49 @@ float SolveProblem(float num1, float num2, char operation)
                         }
                     }
 
-                    else if (level == 3 || level == 4)
+                    else if (level == 3 )
                     {
+                        Debug.Log($"Tipo de dato de correctAnswer: {correctAnswer.GetType()}");
+                        
                         Debug.Log("Level 3 o 4");
                         incorrectAnswer = GenerateRandomFraction();
 
                         Debug.Log(incorrectAnswer);
                         Debug.Log($"level: {level}");
                     }
+                    
+else if (level == 4)
+{
+    try
+    {
+        if (int.TryParse(correctAnswer.ToString(), out int correctValueInt))
+        {
+            int deviation = UnityEngine.Random.Range(-9, 10);
+            incorrectAnswer = (correctValueInt + deviation).ToString();
+        }
+        else if (float.TryParse(correctAnswer.ToString(), out float correctValueFloat))
+        {
+            float deviation = UnityEngine.Random.Range(-1f, 1f);
+            float generatedAnswer = correctValueFloat + deviation;
+            incorrectAnswer = MathF.Round(generatedAnswer, 2).ToString("F2");
+        }
+        else if (correctAnswer is string correctValueString)
+        {
+            // Generar fracciones o valores cercanos como texto
+            incorrectAnswer = GenerateRandomFraction();
+            Debug.Log($"Correcto #3: {correctValueString} - Incorrecto: {incorrectAnswer}");
+        }
+        else
+        {
+            throw new System.Exception("Tipo de respuesta no manejado para el nivel 4.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error processing answer: {ex.Message}");
+        incorrectAnswer = "Error";
+    }
+}
 
 else if (level >= 5)
 {
