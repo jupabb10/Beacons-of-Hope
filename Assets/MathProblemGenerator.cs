@@ -112,7 +112,10 @@ public class MathProblemGenerator : MonoBehaviour
         if(timer == 0)
         {
             GenerateNewProblem();
-            ValidatePlayerPosition();
+            // ValidatePlayerPosition();
+            LoseLife();
+            correctAnswersCount = 0;
+            player.ShowFeedback(false);
             timer = setTimer;
         }
     }
@@ -224,32 +227,33 @@ public class MathProblemGenerator : MonoBehaviour
         return a;
     }
 
-    void GenerateProblemByOperationSet(char[] operations, int problemsPerOperation)
+void GenerateProblemByOperationSet(char[] operations, int problemsPerOperation)
+{
+    int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
+    char operation = operations[operationIndex];
+    int num1 = UnityEngine.Random.Range(1, 11);
+    int num2 = UnityEngine.Random.Range(1, 11);
+
+    if (operation == '/')
     {
-        int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
-        char operation = operations[operationIndex];
-        int num1 = UnityEngine.Random.Range(1, 11);
-        int num2 = UnityEngine.Random.Range(1, 11);
-
-        if (operation == '/')
+        // Asegurarse de no dividir por 0
+        while (num2 == 0)
         {
-            // Asegurarse de no dividir por 0
-            while (num2 == 0)
-            {
-                num2 = UnityEngine.Random.Range(1, 11);
-            }
-
-            // Divisi�n con 2 decimales
-            correctAnswer = MathF.Round((float)num1 / num2, 2);
-        }
-        else
-        {
-            correctAnswer = SolveProblem(num1, num2, operation);
+            num2 = UnityEngine.Random.Range(1, 11);
         }
 
-
-        DisplayProblem($"{num1} {operation} {num2}", operation);
+        // División con 2 decimales
+        correctAnswer = MathF.Round((float)num1 / num2, 2);
     }
+    else
+    {
+        correctAnswer = SolveProblem(num1, num2, operation);
+    }
+
+    // Mostrar "÷" en lugar de "/"
+    string displayOperation = operation == '/' ? "÷" : operation.ToString();
+    DisplayProblem($"{num1} {displayOperation} {num2}", operation);
+}
 
     void GenerateBasicProblem()
     {
@@ -526,26 +530,33 @@ float SolveProblem(float num1, float num2, char operation)
         return result;
     }
 
-    void DisplayProblem(string problem, char operation)
+void DisplayProblem(string problem, char operation)
+{
+    problemText.text = problem;
+    StartCoroutine(DelayedAssignAnswers(operation));
+}
+
+IEnumerator DelayedAssignAnswers(char operation)
+{
+    yield return new WaitForSeconds(1.2f); // Espera 1 segundo
+
+    if (level == 1)
     {
-        problemText.text = problem;
-        if (level == 1)
-        {
-            AssignAnswers(correctAnswer, operation);
-        }
-        else if (level == 2)
-        {
-            AssignAnswers((float)correctAnswer, operation);
-        }
-        else if (level == 3 || level == 4)
-        {
-            AssignAnswers(correctAnswer.ToString(), operation);
-        }
-        else if (level >= 5)
-        {
-            AssignAnswers(correctAnswer, operation);
-        }
+        AssignAnswers(correctAnswer, operation);
     }
+    else if (level == 2)
+    {
+        AssignAnswers((float)correctAnswer, operation);
+    }
+    else if (level == 3 || level == 4)
+    {
+        AssignAnswers(correctAnswer.ToString(), operation);
+    }
+    else if (level >= 5)
+    {
+        AssignAnswers(correctAnswer, operation);
+    }
+}
 
     void AssignAnswers(object correctAnswer, char operation)
     {
@@ -602,12 +613,12 @@ float SolveProblem(float num1, float num2, char operation)
                         Debug.Log($"level: {level}");
                     }
                     
-else if (level == 4)
-{
-    try
-    {
-        if (int.TryParse(correctAnswer.ToString(), out int correctValueInt))
-        {
+                    else if (level == 4)
+                    {
+                    try
+                     {
+                       if (int.TryParse(correctAnswer.ToString(), out int correctValueInt))
+                         {
             int deviation = UnityEngine.Random.Range(-9, 10);
             incorrectAnswer = (correctValueInt + deviation).ToString();
         }

@@ -75,14 +75,14 @@ public class Player : MonoBehaviour
             MovePlayer(1); // Mover hacia la derecha
         }
 
-        // Interpolación suave hacia la posición deseada
+        // Interpolaciï¿½n suave hacia la posiciï¿½n deseada
         Vector3 targetPosition = new Vector3(positions[currentPositionIndex], transform.position.y, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetPosition, moveSpeed * Time.deltaTime);
     }
 
     void MovePlayer(int direction)
     {
-        // Actualiza la posición solo si no estamos en los extremos
+        // Actualiza la posiciï¿½n solo si no estamos en los extremos
         int newPositionIndex = Mathf.Clamp(currentPositionIndex + direction, 0, positions.Length - 1);
         currentPositionIndex = newPositionIndex;
     }
@@ -97,13 +97,13 @@ public class Player : MonoBehaviour
 
             if (correctButton == null)
             {
-                Debug.LogWarning($"No se encontró un botón con el tag: boton{correctIndex}");
+                Debug.LogWarning($"No se encontrï¿½ un botï¿½n con el tag: boton{correctIndex}");
                 return;
             }
 
             if (correctBurble == null)
             {
-                Debug.LogWarning($"No se encontró un botón con el tag: burbuja{correctIndex}");
+                Debug.LogWarning($"No se encontrï¿½ un botï¿½n con el tag: burbuja{correctIndex}");
                 return;
             }
 
@@ -123,10 +123,12 @@ public class Player : MonoBehaviour
 
                 if(mathProblemGenerator.correctAnswersCount % 4 == 0)
                 {
-                    mathProblemGenerator.lives += 1;
+                    mathProblemGenerator.lives = Mathf.Min(mathProblemGenerator.lives + 1, 5);
+                    // mathProblemGenerator.lives += 1;
                     mathProblemGenerator.livesManager.UpdateLives(mathProblemGenerator.lives);
                     var extraLive = mathProblemGenerator.lives - 3;
                     mathProblemGenerator.extraLiveText.text = extraLive > 0 ? $"+{extraLive}" : "";
+                    Debug.Log("Extra life granted! Total lives: " + mathProblemGenerator.lives);
                 }
 
                 SoundManager.Instance.PlayEffectSound(SoundManager.Instance.correctSound);
@@ -164,6 +166,7 @@ public class Player : MonoBehaviour
                 if (wrongBurbujaSpriteRenderer != null && wrongBurbujaScript != null)
                 {
                     wrongBurbujaSpriteRenderer.sprite = wrongBurbujaScript.errorSprite;
+                    burbujaSpriteRenderer.sprite = burbujaScript.neutralSprite;
                 }
 
                 StartCoroutine(ResetSpriteAfterDelay(wrongBurbujaSpriteRenderer, wrongBurbujaScript.mainSprite, 0.5f));
@@ -216,7 +219,7 @@ public class Player : MonoBehaviour
 
         if (collisionTag.StartsWith("boton"))
         {
-            // Restaura el sprite original del botón
+            // Restaura el sprite original del botï¿½n
             SpriteRenderer buttonSpriteRenderer = collision.gameObject.GetComponent<SpriteRenderer>();
             ButtonScript buttonScript = collision.gameObject.GetComponent<ButtonScript>();
 
@@ -229,7 +232,7 @@ public class Player : MonoBehaviour
 
     public void StopPlayer()
     {
-        canMove = false; // Detiene cualquier acción del jugador
+        canMove = false; // Detiene cualquier acciï¿½n del jugador
         rigidbody2.velocity = Vector2.zero; // Detiene cualquier movimiento actual
     }
 }

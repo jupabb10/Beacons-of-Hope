@@ -16,8 +16,8 @@ public class ButtonAnimator : MonoBehaviour
     [SerializeField] private Vector3[] initialScales;
     [SerializeField] private Vector3[] finalScales;
 
-    [SerializeField] private float delayBeforeAnimation = 1f; // Tiempo antes de empezar la animación
-    [SerializeField] private float animationDuration = 1f; // Duración de la animación
+    [SerializeField] private float delayBeforeAnimation = 1f; // Tiempo antes de empezar la animaciï¿½n
+    [SerializeField] private float animationDuration = 1f; // Duraciï¿½n de la animaciï¿½n
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class ButtonAnimator : MonoBehaviour
             SpriteRenderer sr = toggleButton.GetComponent<SpriteRenderer>();
             if (sr != null)
             {
-                sr.enabled = true;
+                sr.enabled = false;
             }
         }
 
@@ -41,7 +41,7 @@ public class ButtonAnimator : MonoBehaviour
             SpriteRenderer sr = toggleBurbuja.GetComponent<SpriteRenderer>();
             if (sr != null)
             {
-                sr.enabled = true;
+                sr.enabled = false;
             }
         }
 
@@ -49,9 +49,12 @@ public class ButtonAnimator : MonoBehaviour
         {
             if (text != null)
             {
-                text.enabled = true;
+                text.enabled = false;
             }
         }
+
+
+        ActivateAnimation();
     }
 
     public void ActivateAnimation()
@@ -77,7 +80,7 @@ public class ButtonAnimator : MonoBehaviour
             button.SetActive(true);
         }
 
-        // Espera antes de iniciar la animación
+        // Espera antes de iniciar la animaciï¿½n
         yield return new WaitForSeconds(delayBeforeAnimation);
 
         foreach (GameObject toggleBurbuja in toggleBurbujas)
@@ -107,7 +110,7 @@ public class ButtonAnimator : MonoBehaviour
             {
                 if (i < initialPositions.Length && i < finalPositions.Length)
                 {
-                    // Interpolación de posición y escala
+                    // Interpolaciï¿½n de posiciï¿½n y escala
                     buttons[i].transform.localPosition = Vector3.Lerp(initialPositions[i], finalPositions[i], t);
                     buttons[i].transform.localScale = Vector3.Lerp(initialScales[i], finalScales[i], t);
                 }
@@ -117,7 +120,7 @@ public class ButtonAnimator : MonoBehaviour
             yield return null;
         }
 
-        // Asegúrate de que terminen exactamente en las posiciones y escalas finales
+        // Asegï¿½rate de que terminen exactamente en las posiciones y escalas finales
         for (int i = 0; i < buttons.Length; i++)
         {
             if (i < finalPositions.Length && i < finalScales.Length)
