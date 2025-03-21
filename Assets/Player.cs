@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
     public GameObject feedbackPanel; // Referencia al panel de feedback
     public Color correctColor = Color.green; // Color para respuestas correctas
     public Color incorrectColor = Color.red; // Color para respuestas incorrectas
-    public Color defaultColor = new Color(1, 1, 1, 0); // Transparente por defecto
+    public Color defaultColor = new Color(34, 98, 72, 1); // Transparente por defecto
     private Image panelImage;
 
     public MathProblemGenerator mathProblemGenerator;
@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
             {
                 // Asegurarse de que el color inicial sea el por defecto
                 panelImage.color = defaultColor;
-                feedbackPanel.SetActive(false);
+                // feedbackPanel.SetActive(false);
             }
         }
     }
@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
     public void ShowFeedback(bool isCorrect)
     {
         if (panelImage == null) return;
-        feedbackPanel.SetActive(true);
+        // feedbackPanel.SetActive(true);
         panelImage.color = isCorrect ? correctColor : incorrectColor;
 
         Invoke(nameof(ResetPanelColor), 1f);
@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
         {
             // Volver al color por defecto (transparente)
             panelImage.color = defaultColor;
-            feedbackPanel.SetActive(false);
+            // feedbackPanel.SetActive(false);
         }
     }
 

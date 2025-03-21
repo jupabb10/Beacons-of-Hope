@@ -22,6 +22,7 @@ public class MathProblemGenerator : MonoBehaviour
     public TextMeshProUGUI ScoreText; // Campo para mostrar el problema
 
     public TextMeshProUGUI timerText; // Campo para mostrar el problema
+    
     public TextMeshProUGUI extraLiveText;
     public int score = 0;
     public int lives = 3;
@@ -54,6 +55,12 @@ public class MathProblemGenerator : MonoBehaviour
             levelText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
             timerText.fontMaterial.SetColor("_OutlineColor", Color.black);
             timerText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+            extraLiveText.fontMaterial.SetColor("_OutlineColor", Color.black);
+            extraLiveText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+
+            ScoreText.fontMaterial.SetColor("_OutlineColor", Color.black);
+            ScoreText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+            
         }
 
         SoundManager.Instance.PlayBackgroundSound(SoundManager.Instance.mainMenuSound, true);
