@@ -33,12 +33,17 @@ public class MathProblemGenerator : MonoBehaviour
     private int correctAnswerIndex;
     private object correctAnswer;
     public int totalAnswerCorrect = 0;
+    public int incorrectAnswersCount = 0;
+    public float gameTime = 0f;
     public int correctAnswersCount = 0;
     public int level = 1; // Nivel inicial
     private int maxLevel = 4;
 
     private int Answer1 = 1;
     private int Answer2 = 2;
+
+    private string formattedTime; // Variable para guardar el tiempo formateado
+    private bool isGameOver = false; // Bandera para controlar si el juego ha terminado
 
     public ButtonAnimator buttonAnimator;
 
@@ -60,6 +65,8 @@ public class MathProblemGenerator : MonoBehaviour
 
             ScoreText.fontMaterial.SetColor("_OutlineColor", Color.black);
             ScoreText.fontMaterial.SetFloat("_OutlineWidth", 0.3f);
+
+
             
         }
 
@@ -69,46 +76,65 @@ public class MathProblemGenerator : MonoBehaviour
         {
             player = FindObjectOfType<Player>();
         }
-
+        isGameOver = false;
         GenerateNewProblem();
         InvokeRepeating("changeTimer", 1f, 1f);
     }
 
     private void Update()
     {
+    if (!isGameOver) // Solo incrementar el tiempo si el juego no ha terminado
+    {
+        gameTime += Time.deltaTime;
+
+        // Calcular minutos, segundos y milisegundos
+        int minutes = Mathf.FloorToInt(gameTime / 60); // Minutos
+        int seconds = Mathf.FloorToInt(gameTime % 60); // Segundos
+        int milliseconds = Mathf.FloorToInt((gameTime % 1) * 1000); // Milisegundos
+
+        // Guardar el tiempo formateado en la variable
+        formattedTime = $"{minutes:D2}:{seconds:D2}:{milliseconds:D3}";
+    }
+
+
         if (Input.GetKeyDown(KeyCode.G))
         {
             Invoke(nameof(ValidatePlayerPosition), 0.1f);
             Invoke(nameof(GenerateNewProblem), 0.1f);
             timer = setTimer;
         }
-    if (Input.GetKeyDown(KeyCode.Alpha1))
-    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
         level = 1;
         GenerateNewProblem();
         LevelUp();
-    }
-    else if (Input.GetKeyDown(KeyCode.Alpha2))
-    {
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
         level = 2;
         GenerateNewProblem();
         LevelUp();
-    }
-    else if (Input.GetKeyDown(KeyCode.Alpha3))
-    {
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
         level = 3;
         GenerateNewProblem();
         LevelUp();
-    }
-    else if (Input.GetKeyDown(KeyCode.Alpha4))
-    {
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
         level = 4;
         GenerateNewProblem();
         LevelUp();
-    }
+        }
 
         
     }
+
+    public string GetFormattedTime()
+{
+    return formattedTime;
+}
 
     void changeTimer()
     {
@@ -133,9 +159,14 @@ public class MathProblemGenerator : MonoBehaviour
         livesManager.UpdateLives(lives);
         var extraLive = lives - 3;
         extraLiveText.text = extraLive > 0 ? $"+{extraLive}" : "";
+        incorrectAnswersCount++;
 
         if (lives <= 0)
         {
+            isGameOver = true; // Detener el tiempo
+        string finalTime = GetFormattedTime();
+        Debug.Log($"Tiempo final de juego: {finalTime}");
+
             livesManager.GameOver();
             ModelSaveData gameData = new ModelSaveData{
                 player = "Player",
@@ -304,7 +335,15 @@ void GenerateDecimalProblemByOperationSet(char[] operations, int problemsPerOper
 {
     int operationIndex = (correctAnswersCount / problemsPerOperation) % operations.Length;
     char operation = operations[operationIndex];
-    float num1 = MathF.Round(UnityEngine.Random.Range(1f, 10f), decimalPlaces);
+    float num1;
+    if (level == 2)
+    {
+        num1 = UnityEngine.Random.Range(1, 11); // Sin decimales
+    }
+    else
+    {
+        num1 = MathF.Round(UnityEngine.Random.Range(1f, 10f), decimalPlaces); // Con decimales
+    }
     float num2 = MathF.Round(UnityEngine.Random.Range(1f, 10f), decimalPlaces);
 
     switch (operation)
@@ -323,8 +362,11 @@ void GenerateDecimalProblemByOperationSet(char[] operations, int problemsPerOper
             break;
     }
 
-Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {correctAnswer}");
-    DisplayProblem($"{MathF.Round(num1, decimalPlaces)} {operation} {MathF.Round(num2, decimalPlaces)}", operation);
+    string displayOperation = (operation == '/' && level == 2) ? "÷" : operation.ToString();
+
+    Debug.Log($"Operacion {operation} - Num1 {num1} - Num2 {num2} - CorrectAnswer {correctAnswer}");
+    DisplayProblem($"{MathF.Round(num1, decimalPlaces)} {displayOperation} {MathF.Round(num2, decimalPlaces)}", operation);
+
 }
 
     void GenerateDecimalProblem()

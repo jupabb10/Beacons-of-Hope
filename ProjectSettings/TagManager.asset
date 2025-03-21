@@ -11,6 +11,7 @@ TagManager:
   - burbuja0
   - burbuja1
   - burbuja2
+  - MathProblemGenerator
   layers:
   - Default
   - TransparentFX
